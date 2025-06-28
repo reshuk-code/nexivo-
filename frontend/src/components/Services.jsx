@@ -215,99 +215,107 @@ export default function Services() {
             }}
             style={{ paddingBottom: 50 }}
           >
-            {services.map((s, i) => (
-              <SwiperSlide key={s._id || i}>
-                <Paper elevation={8} sx={{
-                  p: 5,
-                  textAlign: 'center',
-                  borderRadius: 0,
-                  border: '2px solid #111',
-                  boxShadow: 'none',
-                  transition: 'box-shadow 0.2s, transform 0.2s',
-                  '&:hover': { boxShadow: '0 0 0 4px #000', transform: 'scale(1.03)' },
-                  minHeight: 340,
-                  display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                  background: '#fff',
-                  mb: 2
-                }}>
-                  <Box>
-                    {getServiceImage(s.image) && (
-                      <img
-                        src={getServiceImage(s.image)}
-                        alt={s.name}
-                        style={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 0, marginBottom: 18 }}
-                      />
-                    )}
-                    <Typography variant="h5" fontWeight={900} sx={{ mb: 2, color: '#111', letterSpacing: 1, fontFamily: 'Poppins' }}>{s.name}</Typography>
-                    <Typography sx={{ color: '#222', fontSize: 18, mb: 2, fontWeight: 500 }}>{s.description}</Typography>
-                    <Typography sx={{ color: '#000', fontSize: 15, mb: 2, fontWeight: 700, letterSpacing: 1 }}>{s.category}</Typography>
-                    {Array.isArray(s.items) && s.items.length > 0 && (
-                      <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', mb: 2 }}>
-                        {s.items.map((item, idx) => (
-                          <Chip key={idx} label={item} sx={{ bgcolor: '#f5f5f5', color: '#222', fontWeight: 600, fontFamily: 'Poppins', borderRadius: 1 }} />
-                        ))}
-                      </Stack>
-                    )}
-                  </Box>
-                  <Button
-                    variant="contained"
-                    color="inherit"
-                    sx={{ mt: 4, borderRadius: 0, fontWeight: 700, fontFamily: 'Poppins', textTransform: 'uppercase', fontSize: 18, px: 5, py: 1.5, boxShadow: 'none', bgcolor: '#111', color: '#fff', '&:hover': { bgcolor: '#fff', color: '#111', border: '2px solid #111' } }}
-                    onClick={() => handleEnroll(s)}
-                  >
-                    Enroll Now
-                  </Button>
-                </Paper>
-              </SwiperSlide>
-            ))}
+            {services.map((s, i) => {
+              // items fallback: string आयो भने split गर्ने
+              const tagList = Array.isArray(s.items) ? s.items : (typeof s.items === 'string' ? s.items.split(',').map(i => i.trim()).filter(Boolean) : []);
+              return (
+                <SwiperSlide key={s._id || i}>
+                  <Paper elevation={8} sx={{
+                    p: 5,
+                    textAlign: 'center',
+                    borderRadius: 0,
+                    border: '2px solid #111',
+                    boxShadow: 'none',
+                    transition: 'box-shadow 0.2s, transform 0.2s',
+                    '&:hover': { boxShadow: '0 0 0 4px #000', transform: 'scale(1.03)' },
+                    minHeight: 340,
+                    display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                    background: '#fff',
+                    mb: 2
+                  }}>
+                    <Box>
+                      {getServiceImage(s.image) && (
+                        <img
+                          src={getServiceImage(s.image)}
+                          alt={s.name}
+                          style={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 0, marginBottom: 18 }}
+                        />
+                      )}
+                      <Typography variant="h5" fontWeight={900} sx={{ mb: 2, color: '#111', letterSpacing: 1, fontFamily: 'Poppins' }}>{s.name}</Typography>
+                      <Typography sx={{ color: '#222', fontSize: 18, mb: 2, fontWeight: 500 }}>{s.description}</Typography>
+                      <Typography sx={{ color: '#000', fontSize: 15, mb: 2, fontWeight: 700, letterSpacing: 1 }}>{s.category}</Typography>
+                      {tagList.length > 0 && (
+                        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', mb: 2 }}>
+                          {tagList.map((item, idx) => (
+                            <Chip key={idx} label={item} sx={{ bgcolor: '#f5f5f5', color: '#222', fontWeight: 600, fontFamily: 'Poppins', borderRadius: 1 }} />
+                          ))}
+                        </Stack>
+                      )}
+                    </Box>
+                    <Button
+                      variant="contained"
+                      color="inherit"
+                      sx={{ mt: 4, borderRadius: 0, fontWeight: 700, fontFamily: 'Poppins', textTransform: 'uppercase', fontSize: 18, px: 5, py: 1.5, boxShadow: 'none', bgcolor: '#111', color: '#fff', '&:hover': { bgcolor: '#fff', color: '#111', border: '2px solid #111' } }}
+                      onClick={() => handleEnroll(s)}
+                    >
+                      Enroll Now
+                    </Button>
+                  </Paper>
+                </SwiperSlide>
+              );
+            })}
           </Swiper>
         ) : (
           <Grid container spacing={4} justifyContent="center">
-            {services.map((s, i) => (
-              <Grid item xs={12} md={5} key={s._id || i}>
-                <Paper elevation={8} sx={{
-                  p: 5,
-                  textAlign: 'center',
-                  borderRadius: 0,
-                  border: '2px solid #111',
-                  boxShadow: 'none',
-                  transition: 'box-shadow 0.2s, transform 0.2s',
-                  '&:hover': { boxShadow: '0 0 0 4px #000', transform: 'scale(1.03)' },
-                  minHeight: 340,
-                  display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                  background: '#fff',
-                  mb: 2
-                }}>
-                  <Box>
-                    {getServiceImage(s.image) && (
-                      <img
-                        src={getServiceImage(s.image)}
-                        alt={s.name}
-                        style={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 0, marginBottom: 18 }}
-                      />
-                    )}
-                    <Typography variant="h5" fontWeight={900} sx={{ mb: 2, color: '#111', letterSpacing: 1, fontFamily: 'Poppins' }}>{s.name}</Typography>
-                    <Typography sx={{ color: '#222', fontSize: 18, mb: 2, fontWeight: 500 }}>{s.description}</Typography>
-                    <Typography sx={{ color: '#000', fontSize: 15, mb: 2, fontWeight: 700, letterSpacing: 1 }}>{s.category}</Typography>
-                    {Array.isArray(s.items) && s.items.length > 0 && (
-                      <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', mb: 2 }}>
-                        {s.items.map((item, idx) => (
-                          <Chip key={idx} label={item} sx={{ bgcolor: '#f5f5f5', color: '#222', fontWeight: 600, fontFamily: 'Poppins', borderRadius: 1 }} />
-                        ))}
-                      </Stack>
-                    )}
-                  </Box>
-                  <Button
-                    variant="contained"
-                    color="inherit"
-                    sx={{ mt: 4, borderRadius: 0, fontWeight: 700, fontFamily: 'Poppins', textTransform: 'uppercase', fontSize: 18, px: 5, py: 1.5, boxShadow: 'none', bgcolor: '#111', color: '#fff', '&:hover': { bgcolor: '#fff', color: '#111', border: '2px solid #111' } }}
-                    onClick={() => handleEnroll(s)}
-                  >
-                    Enroll Now
-                  </Button>
-                </Paper>
-              </Grid>
-            ))}
+            {services.map((s, i) => {
+              // items fallback: string आयो भने split गर्ने
+              const tagList = Array.isArray(s.items) ? s.items : (typeof s.items === 'string' ? s.items.split(',').map(i => i.trim()).filter(Boolean) : []);
+              return (
+                <Grid item xs={12} md={5} key={s._id || i}>
+                  <Paper elevation={8} sx={{
+                    p: 5,
+                    textAlign: 'center',
+                    borderRadius: 0,
+                    border: '2px solid #111',
+                    boxShadow: 'none',
+                    transition: 'box-shadow 0.2s, transform 0.2s',
+                    '&:hover': { boxShadow: '0 0 0 4px #000', transform: 'scale(1.03)' },
+                    minHeight: 340,
+                    display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+                    background: '#fff',
+                    mb: 2
+                  }}>
+                    <Box>
+                      {getServiceImage(s.image) && (
+                        <img
+                          src={getServiceImage(s.image)}
+                          alt={s.name}
+                          style={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 0, marginBottom: 18 }}
+                        />
+                      )}
+                      <Typography variant="h5" fontWeight={900} sx={{ mb: 2, color: '#111', letterSpacing: 1, fontFamily: 'Poppins' }}>{s.name}</Typography>
+                      <Typography sx={{ color: '#222', fontSize: 18, mb: 2, fontWeight: 500 }}>{s.description}</Typography>
+                      <Typography sx={{ color: '#000', fontSize: 15, mb: 2, fontWeight: 700, letterSpacing: 1 }}>{s.category}</Typography>
+                      {tagList.length > 0 && (
+                        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', mb: 2 }}>
+                          {tagList.map((item, idx) => (
+                            <Chip key={idx} label={item} sx={{ bgcolor: '#f5f5f5', color: '#222', fontWeight: 600, fontFamily: 'Poppins', borderRadius: 1 }} />
+                          ))}
+                        </Stack>
+                      )}
+                    </Box>
+                    <Button
+                      variant="contained"
+                      color="inherit"
+                      sx={{ mt: 4, borderRadius: 0, fontWeight: 700, fontFamily: 'Poppins', textTransform: 'uppercase', fontSize: 18, px: 5, py: 1.5, boxShadow: 'none', bgcolor: '#111', color: '#fff', '&:hover': { bgcolor: '#fff', color: '#111', border: '2px solid #111' } }}
+                      onClick={() => handleEnroll(s)}
+                    >
+                      Enroll Now
+                    </Button>
+                  </Paper>
+                </Grid>
+              );
+            })}
           </Grid>
         )}
 
