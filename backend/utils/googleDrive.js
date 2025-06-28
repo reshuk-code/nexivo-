@@ -1,9 +1,9 @@
 const { google } = require('googleapis');
 const stream = require('stream');
 
-// Service account authentication
+// Service account authentication using JSON content from environment variable
 const auth = new google.auth.GoogleAuth({
-  keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS, // .env मा JSON path राख्नुहोस्
+  credentials: JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON || '{}'),
   scopes: ['https://www.googleapis.com/auth/drive'],
 });
 
