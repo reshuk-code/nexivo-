@@ -90,6 +90,28 @@ export default function Navbar() {
         </IconButton>
         <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)}>
           <Box sx={{ width: 240, pt: 2 }} role="presentation" onClick={() => setDrawerOpen(false)}>
+            {/* User Profile Section */}
+            {user && (
+              <Box sx={{ p: 2, borderBottom: '1px solid #eee', mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                  <Avatar 
+                    src={getProfileImage(user.profileImage ? user.profileImage : undefined)} 
+                    alt={user.username} 
+                    sx={{ width: 48, height: 48 }}
+                  >
+                    {!user.profileImage && user.username ? user.username[0].toUpperCase() : ''}
+                  </Avatar>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight={600} sx={{ color: '#000' }}>
+                      {user.username}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#666' }}>
+                      {user.email}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Box>
+            )}
             <List>
               {navItems.map((item) => (
                 <ListItem button key={item.label} component={RouterLink} to={item.href}>
