@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Nexivo Backend Test</title>
+  <style>
+    body { font-family: Arial; margin: 30px; }
+    section { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; }
+    h2 { margin-top: 0; }
+    input, button, select { margin: 5px 0; }
+    .response { color: green; font-size: 0.9em; }
+    .error { color: red; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <h1>Nexivo Backend Test Panel</h1>
+
+  <!-- Registration -->
+  <section>
+    <h2>Register User</h2>
+    <input id="reg-username" placeholder="Username"><br>
+    <input id="reg-email" placeholder="Email"><br>
+    <input id="reg-password" type="password" placeholder="Password"><br>
+    <input id="reg-phone" placeholder="Phone"><br>
+    <button onclick="registerUser()">Register</button>
+    <div id="reg-response"></div>
+  </section>
+
+  <!-- Send OTP for Login -->
+  <section>
+    <h2>Send OTP (Login)</h2>
+    <input id="otp-email" placeholder="Email"><br>
+    <button onclick="sendOTP()">Send OTP</button>
+    <div id="otp-response"></div>
+  </section>
+
+  <!-- Login with OTP -->
+  <section>
+    <h2>Login with OTP</h2>
+    <input id="login-email" placeholder="Email"><br>
+    <input id="login-code" placeholder="OTP Code"><br>
+    <button onclick="loginUser()">Login</button>
+    <div id="login-response"></div>
+  </section>
+
+  <!-- Verify Email -->
+  <section>
+    <h2>Verify Email</h2>
+    <input id="verify-email" placeholder="Email"><br>
+    <input id="verify-code" placeholder="OTP Code"><br>
+    <button onclick="verifyEmail()">Verify</button>
+    <div id="verify-response"></div>
+  </section>
+
+  <!-- Edit Profile -->
+  <section>
+    <h2>Edit Profile</h2>
+    <input id="edit-phone" placeholder="New Phone"><br>
+    <input id="edit-password" type="password" placeholder="New Password"><br>
+    <input id="edit-image" type="file"><br>
+    <button onclick="editProfile()">Edit Profile</button>
+    <div id="edit-response"></div>
+  </section>
+
+  <!-- Delete Account -->
+  <section>
+    <h2>Delete Account</h2>
+    <button onclick="deleteAccount()">Delete</button>
+    <div id="delete-response"></div>
+  </section>
+
+  <!-- List & Choose Services -->
+  <section>
+    <h2>List & Choose Services</h2>
+    <button onclick="listServices()">List Services</button>
+    <div id="services-list"></div>
+    <input id="choose-service-ids" placeholder="Service IDs (comma separated)"><br>
+    <button onclick="chooseServices()">Choose Services</button>
+    <div id="choose-response"></div>
+  </section>
+
+  <!-- Join Company -->
+  <section>
+    <h2>Join Company (Send Form)</h2>
+    <input id="join-name" placeholder="Name"><br>
+    <input id="join-email" placeholder="Email"><br>
+    <input id="join-phone" placeholder="Phone"><br>
+    <input id="join-education" placeholder="Education"><br>
+    <input id="join-message" placeholder="Message"><br>
+    <button onclick="joinCompany()">Send Join Request</button>
+    <div id="join-response"></div>
+  </section>
+
+  <script>
+    let token = '';
+    // Helper to show response
+    function showResponse(id, res, isError) {
+      document.getElementById(id).innerHTML = `<span class='${isError ? 'error' : 'response'}'>${typeof res === 'string' ? res : JSON.stringify(res)}</span>`;
+    }
+    // Register
+    async function registerUser() {
+      const data = {
+        username: document.getElementById('reg-username').value,
+        email: document.getElementById('reg-email').value,
+        password: document.getElementById('reg-password').value,
+        phone: document.getElementById('reg-phone').value
+      };
+      const res = await fetch('/v1/api/user/register', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+      });
+      showResponse('reg-response', await res.json(), !res.ok);
+    }
+    // Send OTP
+    async function sendOTP() {
+      const data = { email: document.getElementById('otp-email').value };
+      const res = await fetch('/v1/api/user/send-otp', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+      });
+      showResponse('otp-response', await res.json(), !res.ok);
+    }
+    // Login
+    async function loginUser() {
+      const data = {
+        email: document.getElementById('login-email').value,
+        code: document.getElementById('login-code').value
+      };
+      const res = await fetch('/v1/api/user/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      if (json.user && json.user._id) token = json.token || '';
+      showResponse('login-response', json, !res.ok);
+    }
+    // Verify Email
+    async function verifyEmail() {
+      const data = {
+        email: document.getElementById('verify-email').value,
+        code: document.getElementById('verify-code').value
+      };
+      const res = await fetch('/v1/api/user/verify-email', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+      });
+      showResponse('verify-response', await res.json(), !res.ok);
+    }
+    // Edit Profile
+    async function editProfile() {
+      const phone = document.getElementById('edit-phone').value;
+      const password = document.getElementById('edit-password').value;
+      const imageInput = document.getElementById('edit-image');
+      const formData = new FormData();
+      if (phone) formData.append('phone', phone);
+      if (password) formData.append('password', password);
+      if (imageInput.files[0]) formData.append('profileImage', imageInput.files[0]);
+      const res = await fetch('/v1/api/user/edit-profile', {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: formData
+      });
+      try {
+        const json = await res.json();
+        if (json.user && json.user._id) token = json.token || '';
+        showResponse('edit-response', json, !res.ok);
+      } catch (err) {
+        console.error('Profile update error:', err);
+        showResponse('edit-response', { error: 'Profile update failed' }, true);
+      }
+    }
+    // Delete Account
+    async function deleteAccount() {
+      const res = await fetch('/v1/api/user/delete-profile', {
+        method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }
+      });
+      showResponse('delete-response', await res.json(), !res.ok);
+    }
+    // List Services
+    async function listServices() {
+      const res = await fetch('/v1/api/services/', { method: 'GET' });
+      const json = await res.json();
+      document.getElementById('services-list').innerHTML = '<pre>' + JSON.stringify(json, null, 2) + '</pre>';
+    }
+    // Choose Services
+    async function chooseServices() {
+      const ids = document.getElementById('choose-service-ids').value.split(',').map(x => x.trim());
+      const res = await fetch('/v1/api/services/choose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ serviceIds: ids })
+      });
+      showResponse('choose-response', await res.json(), !res.ok);
+    }
+    // Join Company
+    async function joinCompany() {
+      const data = {
+        name: document.getElementById('join-name').value,
+        email: document.getElementById('join-email').value,
+        phone: document.getElementById('join-phone').value,
+        education: document.getElementById('join-education').value,
+        message: document.getElementById('join-message').value
+      };
+      const res = await fetch('/v1/api/join/register', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+      });
+      showResponse('join-response', await res.json(), !res.ok);
+    }
+  </script>
+</body>
+</html> 
