@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Container, Typography, Grid, Paper, Button, Alert, Avatar, Stack } from '@mui/material';
+import { Helmet } from 'react-helmet-async';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -84,55 +85,72 @@ export default function Contact() {
   };
 
   return (
-    <Box id="contact" sx={{ py: 8, bgcolor: '#fff' }}>
-      <Container>
-        <Typography variant="h4" fontWeight={700} sx={{ mb: 3, fontFamily: 'Poppins', textAlign: 'center' }}>
-          Contact Us
-        </Typography>
-        <Grid container spacing={4} justifyContent="center" alignItems="stretch"
-          direction={{ xs: 'column', md: 'row' }}
-          wrap={{ xs: 'wrap', md: 'nowrap' }}
-          sx={{ minHeight: 400 }}>
-          {/* Left: Testimonials */}
-          <Grid item xs={12} md={6} lg={6} sx={{ minWidth: { xs: 0, md: 340 }, display: 'flex', alignItems: 'center' }}>
-            <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid #eee', width: '100%', bgcolor: '#fafafa', display: 'flex', alignItems: 'center', minHeight: 340 }}>
-              <Box width="100%">
-                <Typography variant="h6" fontWeight={600} sx={{ mb: 2, fontFamily: 'Poppins', color: '#222' }}>
-                  What Our Clients Say
-                </Typography>
-                <Slider {...sliderSettings}>
-                  {testimonials.map((t, i) => (
-                    <Stack key={i} direction="column" alignItems="center" spacing={2} sx={{ px: 2 }}>
-                      <Avatar src={t.image} alt={t.name} sx={{ width: 64, height: 64, mb: 1 }} />
-                      <Typography sx={{ fontStyle: 'italic', color: '#444', mb: 1, fontSize: 18, textAlign: 'center' }}>
-                        "{t.review}"
-                      </Typography>
-                      <Typography fontWeight={600} sx={{ color: '#000' }}>{t.name}</Typography>
-                      <Typography sx={{ color: '#888', fontSize: 15 }}>{t.company}</Typography>
-                    </Stack>
-                  ))}
-                </Slider>
-              </Box>
-            </Paper>
+    <>
+      <Helmet>
+        <title>Contact Us - NEXIVO IT Solutions</title>
+        <meta name="description" content="Get in touch with NEXIVO for your IT solutions. Contact our expert team for web development, mobile apps, AI/ML solutions, and digital transformation services." />
+        <meta name="keywords" content="contact NEXIVO, IT consulting, web development contact, mobile app development, digital transformation services" />
+        <meta property="og:title" content="Contact Us - NEXIVO IT Solutions" />
+        <meta property="og:description" content="Get in touch with NEXIVO for your IT solutions and digital transformation needs." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://reshuksapkota.com.np/contact" />
+        <meta property="og:image" content="https://reshuksapkota.com.np/contact-og-image.jpg" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Contact Us - NEXIVO IT Solutions" />
+        <meta name="twitter:description" content="Get in touch with NEXIVO for your IT solutions and digital transformation needs." />
+        <link rel="canonical" href="https://reshuksapkota.com.np/contact" />
+      </Helmet>
+      
+      <Box id="contact" sx={{ py: 8, bgcolor: '#fff' }}>
+        <Container>
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 3, fontFamily: 'Poppins', textAlign: 'center' }}>
+            Contact Us
+          </Typography>
+          <Grid container spacing={4} justifyContent="center" alignItems="stretch"
+            direction={{ xs: 'column', md: 'row' }}
+            wrap={{ xs: 'wrap', md: 'nowrap' }}
+            sx={{ minHeight: 400 }}>
+            {/* Left: Testimonials */}
+            <Grid item xs={12} md={6} lg={6} sx={{ minWidth: { xs: 0, md: 340 }, display: 'flex', alignItems: 'center' }}>
+              <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid #eee', width: '100%', bgcolor: '#fafafa', display: 'flex', alignItems: 'center', minHeight: 340 }}>
+                <Box width="100%">
+                  <Typography variant="h6" fontWeight={600} sx={{ mb: 2, fontFamily: 'Poppins', color: '#222' }}>
+                    What Our Clients Say
+                  </Typography>
+                  <Slider {...sliderSettings}>
+                    {testimonials.map((t, i) => (
+                      <Stack key={i} direction="column" alignItems="center" spacing={2} sx={{ px: 2 }}>
+                        <Avatar src={t.image} alt={t.name} sx={{ width: 64, height: 64, mb: 1 }} />
+                        <Typography sx={{ fontStyle: 'italic', color: '#444', mb: 1, fontSize: 18, textAlign: 'center' }}>
+                          "{t.review}"
+                        </Typography>
+                        <Typography fontWeight={600} sx={{ color: '#000' }}>{t.name}</Typography>
+                        <Typography sx={{ color: '#888', fontSize: 15 }}>{t.company}</Typography>
+                      </Stack>
+                    ))}
+                  </Slider>
+                </Box>
+              </Paper>
+            </Grid>
+            {/* Right: Contact Form */}
+            <Grid item xs={12} md={6} lg={6} sx={{ minWidth: { xs: 0, md: 340 }, display: 'flex', alignItems: 'center' }}>
+              <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid #eee', width: '100%' }}>
+                <Typography sx={{ mb: 2, fontWeight: 500 }}>Send us a message</Typography>
+                {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+                {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+                <form onSubmit={handleSubmit}>
+                  <input name="name" type="text" placeholder="Your Name" value={form.name} onChange={handleChange} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: '1px solid #ddd', fontFamily: 'Poppins', fontSize: 16 }} required />
+                  <input name="email" type="email" placeholder="Your Email" value={form.email} onChange={handleChange} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: '1px solid #ddd', fontFamily: 'Poppins', fontSize: 16 }} required />
+                  <textarea name="message" placeholder="Message" rows={4} value={form.message} onChange={handleChange} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: '1px solid #ddd', fontFamily: 'Poppins', fontSize: 16 }} required />
+                  <Button type="submit" variant="contained" sx={{ bgcolor: '#000', color: '#fff', borderRadius: 2, fontWeight: 600, fontFamily: 'Poppins', textTransform: 'none', px: 4, py: 1.5, boxShadow: 'none', '&:hover': { bgcolor: '#222' }, transition: 'all 0.2s' }} disabled={loading}>
+                    {loading ? 'Sending...' : 'Send'}
+                  </Button>
+                </form>
+              </Paper>
+            </Grid>
           </Grid>
-          {/* Right: Contact Form */}
-          <Grid item xs={12} md={6} lg={6} sx={{ minWidth: { xs: 0, md: 340 }, display: 'flex', alignItems: 'center' }}>
-            <Paper elevation={0} sx={{ p: 4, borderRadius: 3, border: '1px solid #eee', width: '100%' }}>
-              <Typography sx={{ mb: 2, fontWeight: 500 }}>Send us a message</Typography>
-              {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-              {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-              <form onSubmit={handleSubmit}>
-                <input name="name" type="text" placeholder="Your Name" value={form.name} onChange={handleChange} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: '1px solid #ddd', fontFamily: 'Poppins', fontSize: 16 }} required />
-                <input name="email" type="email" placeholder="Your Email" value={form.email} onChange={handleChange} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: '1px solid #ddd', fontFamily: 'Poppins', fontSize: 16 }} required />
-                <textarea name="message" placeholder="Message" rows={4} value={form.message} onChange={handleChange} style={{ width: '100%', padding: 10, marginBottom: 16, borderRadius: 6, border: '1px solid #ddd', fontFamily: 'Poppins', fontSize: 16 }} required />
-                <Button type="submit" variant="contained" sx={{ bgcolor: '#000', color: '#fff', borderRadius: 2, fontWeight: 600, fontFamily: 'Poppins', textTransform: 'none', px: 4, py: 1.5, boxShadow: 'none', '&:hover': { bgcolor: '#222' }, transition: 'all 0.2s' }} disabled={loading}>
-                  {loading ? 'Sending...' : 'Send'}
-                </Button>
-              </form>
-            </Paper>
-          </Grid>
-        </Grid>
-      </Container>
-    </Box>
+        </Container>
+      </Box>
+    </>
   );
 } 

@@ -13,6 +13,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@fontsource/poppins": "^5.2.6",
+    "@modern-js/runtime": "^2.67.11",
     "@mui/icons-material": "^7.1.2",
     "@mui/material": "^7.1.2",
     "@tinymce/tinymce-react": "^6.2.1",
