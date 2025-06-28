@@ -3,6 +3,8 @@ import { Box, Button, TextField, Typography, CircularProgress, Alert, Avatar, St
 import { useAuth } from './AuthContext';
 import Cropper from 'react-easy-crop';
 
+const BASE_URL = 'https://nexivo.onrender.com';
+
 export default function ProfileEdit({ onCancel, onSuccess }) {
   const { user, token, fetchProfile } = useAuth();
   const [form, setForm] = useState({ phone: user?.phone || '', password: '' });
@@ -80,7 +82,7 @@ export default function ProfileEdit({ onCancel, onSuccess }) {
     if (form.phone) formData.append('phone', form.phone);
     if (form.password) formData.append('password', form.password);
     if (profileImage) formData.append('profileImage', profileImage);
-    const res = await fetch('/v1/api/user/edit-profile', {
+    const res = await fetch(`${BASE_URL}/v1/api/user/edit-profile`, {
       method: 'PUT',
       headers: { Authorization: 'Bearer ' + token },
       body: formData

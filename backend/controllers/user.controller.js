@@ -77,14 +77,29 @@ exports.editProfile = async (req, res) => {
   try {
     const { phone, password } = req.body;
     const update = {};
+    
     if (phone) update.phone = phone;
     if (password) update.password = await bcrypt.hash(password, 10);
+    
+    // Handle profile image upload
     if (req.file) {
-      const driveUrl = await uploadToDrive(req.file.buffer, req.file.originalname, req.file.mimetype);
-      update.profileImage = driveUrl;
+      try {
+        console.log('Starting profile image upload...');
+        const fileName = `profile_${Date.now()}_${req.file.originalname}`;
+        const driveUrl = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
+        update.profileImage = driveUrl;
+        console.log('Profile image upload successful:', driveUrl);
+      } catch (uploadError) {
+        console.error('Profile image upload error:', uploadError);
+        return res.status(500).json({ 
+          error: 'Failed to upload profile image', 
+          details: uploadError.message 
+        });
+      }
     }
+    
     const user = await User.findByIdAndUpdate(req.user._id, update, { new: true });
-    console.log('Profile updated:', user);
+    console.log('Profile updated successfully:', user._id);
     res.json({ message: 'Profile updated', user });
   } catch (err) {
     console.error('Profile update error:', err);
