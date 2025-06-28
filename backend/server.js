@@ -15,7 +15,12 @@ const vacancyRoutes = require('./routes/vacancy.routes');
 const path = require('path');
 
 app.use(cors({
-  origin: ['https://nexivo-e2yt.onrender.com', 'https://nexivo.onrender.com', 'http://localhost:5173'], // Allow both frontend URLs
+  origin: [
+    'https://www.reshuksapkota.com.np',
+    'https://nexivo-e2yt.onrender.com',
+    'https://nexivo.onrender.com',
+    'http://localhost:5173'
+  ], // Allow all frontend URLs
   credentials: true
 }));
 
