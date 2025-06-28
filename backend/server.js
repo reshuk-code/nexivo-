@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const userRoutes = require('./routes/user.routes');
 const servicesRoutes = require('./routes/services.routes');
 const joinRoutes = require('./routes/join.routes');
@@ -15,7 +15,7 @@ const vacancyRoutes = require('./routes/vacancy.routes');
 const path = require('path');
 
 app.use(cors({
-  origin: 'https://nexivo-e2yt.onrender.com', // वा '*', dev मा
+  origin: ['https://nexivo-e2yt.onrender.com', 'https://nexivo.onrender.com', 'http://localhost:5173'], // Allow both frontend URLs
   credentials: true
 }));
 
