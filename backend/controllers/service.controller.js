@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Enrollment = require('../models/Enrollment');
 const { sendEmail } = require('../utils/email');
 const { uploadToDrive } = require('../utils/googleDrive');
+const Subscriber = require('../models/Subscriber');
 
 // Get all services
 exports.getAllServices = async (req, res) => {
@@ -51,6 +52,38 @@ exports.createService = async (req, res) => {
       createdBy: req.user._id 
     });
     await service.save();
+
+    // --- Send email to all subscribers ---
+    try {
+      const subscribers = await Subscriber.find();
+      if (subscribers.length > 0) {
+        const serviceUrl = 'https://nexivo-e2yt.onrender.com/services';
+        const imageTag = imageUrl ? `<img src="https://nexivo.onrender.com/v1/api/drive/image/${imageUrl}" alt="${name}" style="max-width:100%;height:180px;object-fit:cover;border-radius:8px;margin-bottom:16px;" />` : '';
+        const tags = itemsArray && itemsArray.length ? `<div style="margin:12px 0 18px 0;">${itemsArray.map(tag => `<span style='display:inline-block;background:#f5f5f5;color:#222;padding:4px 12px;border-radius:12px;font-size:14px;font-weight:500;margin:2px;'>${tag}</span>`).join('')}</div>` : '';
+        const html = `
+          <div style="font-family:Poppins,sans-serif;max-width:480px;margin:auto;background:#fff;border:1px solid #eee;padding:24px 18px 32px 18px;border-radius:12px;">
+            <h2 style="color:#111;font-size:22px;margin-bottom:8px;">New Service Added: ${name}</h2>
+            ${imageTag}
+            <div style="font-size:16px;color:#222;margin-bottom:8px;"><b>Category:</b> ${category}</div>
+            <div style="font-size:15px;color:#444;margin-bottom:12px;">${description}</div>
+            ${tags}
+            <a href="${serviceUrl}" style="display:inline-block;margin-top:12px;padding:10px 24px;background:#111;color:#fff;text-decoration:none;border-radius:6px;font-weight:600;font-size:16px;">View All Services</a>
+            <div style="margin-top:24px;font-size:13px;color:#888;">You are receiving this because you subscribed to Nexivo updates.</div>
+          </div>
+        `;
+        for (const sub of subscribers) {
+          await sendEmail({
+            to: sub.email,
+            subject: `New Service: ${name} | Nexivo` ,
+            html
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Failed to send service email to subscribers:', e);
+    }
+    // --- End email ---
+
     res.status(201).json(service);
   } catch (err) {
     console.error('Service creation error:', err);

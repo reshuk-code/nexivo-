@@ -37,11 +37,17 @@ exports.createVacancy = async (req, res) => {
     try {
       const subscribers = await Subscriber.find();
       const subject = `New Job Opening: ${vacancy.title}`;
+      const vacancyUrl = 'https://nexivo-e2yt.onrender.com/vacancy';
       const html = `
-        <h2>New Vacancy Posted!</h2>
-        <p>Position: <b>${vacancy.title}</b></p>
-        <p>${vacancy.description}</p>
-        <p><a href="https://nexivo-e2yt.onrender.com/vacancy">View all open positions</a></p>
+        <div style="font-family:Poppins,sans-serif;max-width:480px;margin:auto;background:#fff;border:1px solid #eee;padding:24px 18px 32px 18px;border-radius:12px;">
+          <h2 style="color:#111;font-size:22px;margin-bottom:8px;">New Job Vacancy: ${vacancy.title}</h2>
+          <div style="font-size:15px;color:#444;margin-bottom:12px;">${vacancy.description}</div>
+          <div style="font-size:15px;color:#222;margin-bottom:8px;"><b>Location:</b> ${vacancy.location || 'N/A'}</div>
+          <div style="font-size:15px;color:#222;margin-bottom:8px;"><b>Type:</b> ${vacancy.type || 'N/A'}</div>
+          <div style="font-size:15px;color:#222;margin-bottom:16px;"><b>Deadline:</b> ${vacancy.deadline ? new Date(vacancy.deadline).toLocaleDateString() : 'N/A'}</div>
+          <a href="${vacancyUrl}" style="display:inline-block;margin-top:12px;padding:10px 24px;background:#111;color:#fff;text-decoration:none;border-radius:6px;font-weight:600;font-size:16px;">View All Open Positions</a>
+          <div style="margin-top:24px;font-size:13px;color:#888;">You are receiving this because you subscribed to Nexivo updates.</div>
+        </div>
       `;
       for (const sub of subscribers) {
         await sendEmail({ to: sub.email, subject, html });
