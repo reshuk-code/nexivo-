@@ -8,10 +8,20 @@ import {
   Breadcrumbs,
   Link,
   Divider,
-  Chip
+  Chip,
+  IconButton,
+  Tooltip,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import EmailIcon from '@mui/icons-material/Email';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 const BASE_URL = 'https://nexivo.onrender.com';
 
@@ -30,6 +40,7 @@ export default function BlogDetail() {
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -51,6 +62,48 @@ export default function BlogDetail() {
         setLoading(false);
       });
   }, [id]);
+
+  // Social sharing functions
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const shareTitle = blog?.title || 'Check out this blog post';
+  const shareText = blog?.content?.replace(/<[^>]*>/g, '').substring(0, 100) + '...' || 'Interesting read from NEXIVO';
+
+  const handleShare = (platform) => {
+    let url = '';
+    
+    switch (platform) {
+      case 'facebook':
+        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'twitter':
+        url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`;
+        break;
+      case 'linkedin':
+        url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+        break;
+      case 'whatsapp':
+        url = `https://wa.me/?text=${encodeURIComponent(shareTitle + ' ' + shareUrl)}`;
+        break;
+      case 'email':
+        url = `mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(shareText + '\n\nRead more: ' + shareUrl)}`;
+        break;
+      case 'copy':
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          setSnackbar({ open: true, message: 'Link copied to clipboard!', severity: 'success' });
+        }).catch(() => {
+          setSnackbar({ open: true, message: 'Failed to copy link', severity: 'error' });
+        });
+        return;
+      default:
+        return;
+    }
+    
+    window.open(url, '_blank', 'width=600,height=400');
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   if (loading) {
     return (
@@ -269,8 +322,101 @@ export default function BlogDetail() {
             <div dangerouslySetInnerHTML={{ __html: blog.content }} />
           </Box>
 
-          {/* Footer */}
+          {/* Social Sharing Section */}
           <Divider sx={{ mt: 6, mb: 4, borderColor: '#ddd' }} />
+          
+          <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" sx={{ 
+              mb: 2, 
+              color: '#111', 
+              fontFamily: 'Poppins',
+              fontWeight: 600
+            }}>
+              Share this article
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              <Tooltip title="Share on Facebook">
+                <IconButton
+                  onClick={() => handleShare('facebook')}
+                  sx={{
+                    bgcolor: '#1877f2',
+                    color: '#fff',
+                    '&:hover': { bgcolor: '#166fe5' }
+                  }}
+                >
+                  <FacebookIcon />
+                </IconButton>
+              </Tooltip>
+              
+              <Tooltip title="Share on Twitter">
+                <IconButton
+                  onClick={() => handleShare('twitter')}
+                  sx={{
+                    bgcolor: '#1da1f2',
+                    color: '#fff',
+                    '&:hover': { bgcolor: '#1a91da' }
+                  }}
+                >
+                  <TwitterIcon />
+                </IconButton>
+              </Tooltip>
+              
+              <Tooltip title="Share on LinkedIn">
+                <IconButton
+                  onClick={() => handleShare('linkedin')}
+                  sx={{
+                    bgcolor: '#0077b5',
+                    color: '#fff',
+                    '&:hover': { bgcolor: '#006097' }
+                  }}
+                >
+                  <LinkedInIcon />
+                </IconButton>
+              </Tooltip>
+              
+              <Tooltip title="Share on WhatsApp">
+                <IconButton
+                  onClick={() => handleShare('whatsapp')}
+                  sx={{
+                    bgcolor: '#25d366',
+                    color: '#fff',
+                    '&:hover': { bgcolor: '#128c7e' }
+                  }}
+                >
+                  <WhatsAppIcon />
+                </IconButton>
+              </Tooltip>
+              
+              <Tooltip title="Share via Email">
+                <IconButton
+                  onClick={() => handleShare('email')}
+                  sx={{
+                    bgcolor: '#ea4335',
+                    color: '#fff',
+                    '&:hover': { bgcolor: '#d33426' }
+                  }}
+                >
+                  <EmailIcon />
+                </IconButton>
+              </Tooltip>
+              
+              <Tooltip title="Copy Link">
+                <IconButton
+                  onClick={() => handleShare('copy')}
+                  sx={{
+                    bgcolor: '#666',
+                    color: '#fff',
+                    '&:hover': { bgcolor: '#555' }
+                  }}
+                >
+                  <ContentCopyIcon />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Box>
+
+          {/* Footer */}
+          <Divider sx={{ mb: 4, borderColor: '#ddd' }} />
           
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Button
@@ -308,6 +454,18 @@ export default function BlogDetail() {
           </Box>
         </Paper>
       </Container>
+
+      {/* Snackbar for copy notification */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 } 
