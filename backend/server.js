@@ -21,7 +21,7 @@ app.use(cors({
 
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/nexivo', {
+mongoose.connect('mongodb+srv://reshuksapkota2007:UF67TwWd8i7rC9XU@cluster0.jzxtstl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
