@@ -41,7 +41,7 @@ exports.createVacancy = async (req, res) => {
         <h2>New Vacancy Posted!</h2>
         <p>Position: <b>${vacancy.title}</b></p>
         <p>${vacancy.description}</p>
-        <p><a href="http://localhost:5173/vacancy">View all open positions</a></p>
+        <p><a href="https://nexivo-e2yt.onrender.com/vacancy">View all open positions</a></p>
       `;
       for (const sub of subscribers) {
         await sendEmail({ to: sub.email, subject, html });

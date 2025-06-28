@@ -15,13 +15,13 @@ const vacancyRoutes = require('./routes/vacancy.routes');
 const path = require('path');
 
 app.use(cors({
-  origin: 'http://localhost:5173', // वा '*', dev मा
+  origin: 'https://nexivo-e2yt.onrender.com', // वा '*', dev मा
   credentials: true
 }));
 
 app.use(express.json());
 
-mongoose.connect('mongodb://localhost:27017/nexivo', {
+mongoose.connect('mongodb+srv://reshuksapkota2007:UF67TwWd8i7rC9XU@cluster0.jzxtstl.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {

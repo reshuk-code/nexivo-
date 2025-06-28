@@ -31,7 +31,7 @@ exports.createBlog = async (req, res) => {
         <h2>New Blog Published!</h2>
         <p><b>${blog.title}</b></p>
         <div style="margin-bottom: 16px;">${blog.content}</div>
-        <p><a href="http://localhost:5173/blogs/${blog._id}">Read more on our website</a></p>
+        <p><a href="https://nexivo-e2yt.onrender.com/blogs/${blog._id}">Read more on our website</a></p>
       `;
       for (const sub of subscribers) {
         await sendEmail({ to: sub.email, subject, html });
