@@ -13,16 +13,16 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://nexivo.onrender.com';
 
 // Helper to get Google Drive image URL from file ID or old URL
 function getThumbnailUrl(img) {
   if (!img) return null;
-  if (!img.includes('/') && !img.startsWith('http')) return `http://localhost:3000/v1/api/drive/image/${img}`;
+  if (!img.includes('/') && !img.startsWith('http')) return `https://nexivo.onrender.com/v1/api/drive/image/${img}`;
   const match = img.match(/id=([a-zA-Z0-9_-]+)/);
-  if (match) return `http://localhost:3000/v1/api/drive/image/${match[1]}`;
+  if (match) return `https://nexivo.onrender.com/v1/api/drive/image/${match[1]}`;
   const shareMatch = img.match(/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (shareMatch) return `http://localhost:3000/v1/api/drive/image/${shareMatch[1]}`;
+  if (shareMatch) return `https://nexivo.onrender.com/v1/api/drive/image/${shareMatch[1]}`;
   return img;
 }
 

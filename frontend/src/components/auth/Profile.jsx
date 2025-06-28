@@ -13,13 +13,13 @@ export default function Profile() {
   const getProfileImage = (img) => {
     if (!img) return undefined;
     // If already a file ID (no slashes, no http), return as is
-    if (!img.includes('/') && !img.startsWith('http')) return `http://localhost:3000/v1/api/drive/image/${img}`;
+    if (!img.includes('/') && !img.startsWith('http')) return `https://nexivo.onrender.com/v1/api/drive/image/${img}`;
     // If Google Drive URL, extract id param
     const match = img.match(/id=([a-zA-Z0-9_-]+)/);
-    if (match) return `http://localhost:3000/v1/api/drive/image/${match[1]}`;
+    if (match) return `https://nexivo.onrender.com/v1/api/drive/image/${match[1]}`;
     // If shared link format
     const shareMatch = img.match(/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (shareMatch) return `http://localhost:3000/v1/api/drive/image/${shareMatch[1]}`;
+    if (shareMatch) return `https://nexivo.onrender.com/v1/api/drive/image/${shareMatch[1]}`;
     return undefined;
   };
 

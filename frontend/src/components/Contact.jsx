@@ -4,7 +4,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://nexivo.onrender.com';
 
 const testimonials = [
   {

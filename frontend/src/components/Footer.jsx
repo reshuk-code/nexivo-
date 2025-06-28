@@ -17,7 +17,7 @@ const Footer = () => {
     }
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:3000/v1/api/admin/subscribe", {
+      const res = await fetch("https://nexivo.onrender.com/v1/api/admin/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email })

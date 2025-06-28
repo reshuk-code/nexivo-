@@ -30,11 +30,11 @@ export default function Navbar() {
   // Helper to extract Google Drive file ID and get backend proxy URL
   const getProfileImage = (img) => {
     if (!img) return undefined;
-    if (!img.includes('/') && !img.startsWith('http')) return `http://localhost:3000/v1/api/drive/image/${img}`;
+    if (!img.includes('/') && !img.startsWith('http')) return `https://nexivo.onrender.com/v1/api/drive/image/${img}`;
     const match = img.match(/id=([a-zA-Z0-9_-]+)/);
-    if (match) return `http://localhost:3000/v1/api/drive/image/${match[1]}`;
+    if (match) return `https://nexivo.onrender.com/v1/api/drive/image/${match[1]}`;
     const shareMatch = img.match(/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (shareMatch) return `http://localhost:3000/v1/api/drive/image/${shareMatch[1]}`;
+    if (shareMatch) return `https://nexivo.onrender.com/v1/api/drive/image/${shareMatch[1]}`;
     return undefined;
   };
 

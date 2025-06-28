@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const AuthContext = createContext();
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://nexivo.onrender.com';
 
 export function useAuth() {
   return useContext(AuthContext);

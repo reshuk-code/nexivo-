@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { WorkOutline, LocationOn, Schedule, Description } from '@mui/icons-material';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://nexivo.onrender.com';
 
 export default function Vacancy() {
   const [vacancies, setVacancies] = useState([]);

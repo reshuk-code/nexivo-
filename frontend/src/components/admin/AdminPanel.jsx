@@ -7,7 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'https://nexivo.onrender.com';
 
 export default function AdminPanel() {
   const { user, token } = useAuth();
@@ -511,7 +511,7 @@ export default function AdminPanel() {
                       <TableCell>{app.vacancyId?.title}</TableCell>
                       <TableCell>{app.message}</TableCell>
                       <TableCell>
-                        <IconButton component="a" href={`http://localhost:3000/v1/api/drive/image/${app.cv}`} target="_blank" rel="noopener noreferrer">
+                        <IconButton component="a" href={`https://nexivo.onrender.com/v1/api/drive/image/${app.cv}`} target="_blank" rel="noopener noreferrer">
                           <DownloadIcon />
                         </IconButton>
                       </TableCell>
