@@ -20,6 +20,12 @@ exports.createService = async (req, res) => {
     const { name, description, category, items } = req.body;
     let imageUrl = null;
 
+    // items string आयो भने array बनाउने
+    let itemsArray = items;
+    if (typeof items === 'string') {
+      itemsArray = items.split(',').map(i => i.trim()).filter(Boolean);
+    }
+
     // Handle image upload if provided
     if (req.file) {
       try {
@@ -40,7 +46,7 @@ exports.createService = async (req, res) => {
       name, 
       description, 
       category, 
-      items, 
+      items: itemsArray, 
       image: imageUrl,
       createdBy: req.user._id 
     });
@@ -58,7 +64,12 @@ exports.updateService = async (req, res) => {
     const { id } = req.params;
     const { name, description, category, items } = req.body;
     
-    let updateData = { name, description, category, items };
+    // items string आयो भने array बनाउने
+    let itemsArray = items;
+    if (typeof items === 'string') {
+      itemsArray = items.split(',').map(i => i.trim()).filter(Boolean);
+    }
+    let updateData = { name, description, category, items: itemsArray };
 
     // Handle image upload if provided
     if (req.file) {
