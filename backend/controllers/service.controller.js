@@ -23,11 +23,16 @@ exports.createService = async (req, res) => {
     // Handle image upload if provided
     if (req.file) {
       try {
+        console.log('Starting image upload...');
         const fileName = `service_${Date.now()}_${req.file.originalname}`;
         imageUrl = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
+        console.log('Image upload successful:', imageUrl);
       } catch (uploadError) {
         console.error('Image upload error:', uploadError);
-        return res.status(500).json({ error: 'Failed to upload image' });
+        return res.status(500).json({ 
+          error: 'Failed to upload image', 
+          details: uploadError.message 
+        });
       }
     }
 
@@ -42,7 +47,7 @@ exports.createService = async (req, res) => {
     await service.save();
     res.status(201).json(service);
   } catch (err) {
-    console.error(err);
+    console.error('Service creation error:', err);
     res.status(500).json({ error: 'Failed to create service' });
   }
 };
