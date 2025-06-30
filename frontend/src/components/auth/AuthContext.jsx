@@ -17,13 +17,13 @@ export function AuthProvider({ children }) {
     else localStorage.removeItem('token');
   }, [token]);
 
-  // Login with email + OTP
-  async function login(email, code) {
+  // Login with email + OTP + userId (if needed)
+  async function login(email, code, userId) {
     setLoading(true);
     const res = await fetch(BASE_URL + '/v1/api/user/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, code })
+      body: JSON.stringify(userId ? { email, code, userId } : { email, code })
     });
     const data = await res.json();
     setLoading(false);
@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
     return { success: false, error: data.error };
   }
 
-  // Send OTP
+  // Send OTP (returns accounts if multiple)
   async function sendOTP(email) {
     setLoading(true);
     const res = await fetch(BASE_URL + '/v1/api/user/send-otp', {

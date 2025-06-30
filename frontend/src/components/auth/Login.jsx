@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, CircularProgress, Alert } from '@mui/material';
+import { Box, Button, TextField, Typography, CircularProgress, Alert, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
 import { useAuth } from './AuthContext';
 
 export default function Login({ onSwitch, verifiedMsg }) {
@@ -9,17 +9,24 @@ export default function Login({ onSwitch, verifiedMsg }) {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(verifiedMsg || '');
+  const [accounts, setAccounts] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState('');
 
   const handleSendOTP = async () => {
     setError(''); setSuccess('');
     const res = await sendOTP(email);
-    if (res.message) { setOtpSent(true); setSuccess('OTP sent to your email.'); }
-    else setError(res.error || 'Failed to send OTP');
+    if (res.accounts) {
+      setAccounts(res.accounts);
+      setOtpSent(true);
+      setSuccess('OTP sent to your email. Please select your account.');
+    } else if (res.message) {
+      setOtpSent(true); setSuccess('OTP sent to your email.');
+    } else setError(res.error || 'Failed to send OTP');
   };
 
   const handleLogin = async () => {
     setError(''); setSuccess('');
-    const res = await login(email, code);
+    const res = await login(email, code, accounts.length > 1 ? selectedUserId : undefined);
     if (res.success) setSuccess('Login successful!');
     else setError(res.error || 'Login failed');
   };
@@ -33,9 +40,26 @@ export default function Login({ onSwitch, verifiedMsg }) {
       {!otpSent && <Button fullWidth variant="contained" sx={{ bgcolor: '#000', color: '#fff', mb: 2 }} onClick={handleSendOTP} disabled={loading || !email}>
         {loading ? <CircularProgress size={22} /> : 'Send OTP'}
       </Button>}
+      {otpSent && accounts.length > 1 && (
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Select Account</InputLabel>
+          <Select
+            value={selectedUserId}
+            label="Select Account"
+            onChange={e => setSelectedUserId(e.target.value)}
+            disabled={loading}
+          >
+            {accounts.map(acc => (
+              <MenuItem key={acc._id} value={acc._id}>
+                {acc.username} ({acc.role}, {acc.status})
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
       {otpSent && <>
         <TextField label="OTP Code" fullWidth margin="normal" value={code} onChange={e => setCode(e.target.value)} disabled={loading} />
-        <Button fullWidth variant="contained" sx={{ bgcolor: '#000', color: '#fff', mb: 2 }} onClick={handleLogin} disabled={loading || !code}>
+        <Button fullWidth variant="contained" sx={{ bgcolor: '#000', color: '#fff', mb: 2 }} onClick={handleLogin} disabled={loading || !code || (accounts.length > 1 && !selectedUserId)}>
           {loading ? <CircularProgress size={22} /> : 'Login'}
         </Button>
       </>}
