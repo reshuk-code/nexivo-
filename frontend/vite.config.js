@@ -19,7 +19,9 @@ export default defineConfig({
         }
       }
     },
-    chunkSizeWarningLimit: 1000 // (KB) - optional, warning limit बढाउन
+    chunkSizeWarningLimit: 1000,
+    // Copy _redirects file to build output
+    copyPublicDir: true
   },
   // Add SPA fallback
   preview: {

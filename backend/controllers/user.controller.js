@@ -10,13 +10,41 @@ const VacancyApplication = require('../models/VacancyApplication');
 exports.register = async (req, res) => {
   try {
     const { username, email, password, phone } = req.body;
+
+    // Check if email has reached account limit
+    const hasReachedLimit = await User.hasReachedAccountLimit(email);
+    if (hasReachedLimit) {
+      return res.status(400).json({ 
+        error: 'Account limit reached', 
+        message: 'Maximum 5 accounts allowed per email address' 
+      });
+    }
+
+    // Check if username is already taken
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ 
+        error: 'Username taken',
+        message: 'This username is already in use' 
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationCode = crypto.randomInt(100000, 999999).toString();
     const user = new User({ username, email, password: hashedPassword, phone, verificationCode });
     await user.save();
     await sendOTPEmail(email, verificationCode);
-    res.status(201).json({ message: 'Registration successful. Please verify your email.' });
+    
+    // Get current account count for this email
+    const accountCount = await User.countAccountsByEmail(email);
+    
+    res.status(201).json({ 
+      message: 'Registration successful. Please verify your email.',
+      accountCount,
+      accountsRemaining: 5 - accountCount
+    });
   } catch (err) {
+    console.error('Registration error:', err);
     res.status(500).json({ error: 'Registration failed' });
   }
 };
@@ -150,7 +178,21 @@ exports.getAccountsByEmail = async (req, res) => {
     const { email } = req.query;
     const users = await User.find({ email });
     if (!users || users.length === 0) return res.status(404).json({ error: 'No accounts found for this email' });
-    res.json(users.map(u => ({ _id: u._id, username: u.username, role: u.role, status: u.status })));
+    
+    const accountCount = users.length;
+    const accountsRemaining = 5 - accountCount;
+    
+    res.json({
+      accounts: users.map(u => ({ 
+        _id: u._id, 
+        username: u.username, 
+        role: u.role, 
+        status: u.status 
+      })),
+      accountCount,
+      accountsRemaining,
+      hasReachedLimit: accountCount >= 5
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch accounts' });
   }
