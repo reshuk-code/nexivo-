@@ -18,6 +18,7 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import Loader from './Loader';
 
 const BASE_URL = 'https://nexivo.onrender.com';
 
@@ -55,13 +56,7 @@ export default function AllBlogs() {
   };
 
   if (loading) {
-    return (
-      <Box sx={{ py: 8, bgcolor: '#f8f8f8', minHeight: '60vh' }}>
-        <Container>
-          <Typography sx={{ textAlign: 'center', color: '#666' }}>Loading blogs...</Typography>
-        </Container>
-      </Box>
-    );
+    return <Loader />;
   }
 
   return (

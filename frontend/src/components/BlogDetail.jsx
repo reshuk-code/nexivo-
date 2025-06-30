@@ -22,6 +22,7 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import EmailIcon from '@mui/icons-material/Email';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import Loader from './Loader';
 
 const BASE_URL = 'https://nexivo.onrender.com';
 
@@ -185,13 +186,7 @@ export default function BlogDetail() {
   };
 
   if (loading) {
-    return (
-      <Box sx={{ py: 8, bgcolor: '#f8f8f8', minHeight: '60vh' }}>
-        <Container>
-          <Typography sx={{ textAlign: 'center', color: '#666' }}>Loading blog...</Typography>
-        </Container>
-      </Box>
-    );
+    return <Loader />;
   }
 
   if (error || !blog) {

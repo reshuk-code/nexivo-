@@ -6,6 +6,7 @@ import ServiceEditor from './ServiceEditor';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
+import Loader from '../Loader';
 
 const BASE_URL = 'https://nexivo.onrender.com';
 
@@ -268,7 +269,7 @@ export default function AdminPanel() {
           <Tab label="Subscribers" />
         </Tabs>
       </Paper>
-      {loading ? <CircularProgress /> : error ? <Alert severity="error">{error}</Alert> : (
+      {loading ? <Loader /> : error ? <Alert severity="error">{error}</Alert> : (
         tab === 0 ? (
           <TableContainer component={Paper}>
             <Table>

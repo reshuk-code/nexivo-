@@ -18,6 +18,7 @@ import Register from './components/auth/Register';
 import Profile from './components/auth/Profile';
 import ProfileEdit from './components/auth/ProfileEdit';
 import AdminPanel from './components/admin/AdminPanel';
+import Loader from './components/Loader';
 
 function AuthFlow() {
   const { user } = useAuth();
@@ -46,6 +47,16 @@ export default function App() {
 
   // Cookie consent state
   const [showCookie, setShowCookie] = useState(false);
+
+  // Global loading state for initial data fetch
+  const [loading, setLoading] = useState(true);
+
+  // Simulate main data fetch on mount (replace with real fetch logic as needed)
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 1500); // Simulate 1.5s loading
+    return () => clearTimeout(timer);
+  }, []);
 
   // Check localStorage for flags
   useEffect(() => {
@@ -100,73 +111,79 @@ export default function App() {
           display: "flex",
           flexDirection: "column"
         }}>
-          <Navbar />
-          <div style={{ flex: 1 }}>
-            <Routes>
-              <Route path="/" element={
-                <>
-                  <Hero />
-                  <Services />
-                  <Blogs />
-                  <About />
-                  <Careers />
-                  <Contact />
-                </>
-              } />
-              <Route path="/login" element={<AuthFlow />} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/profile/edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/blogs" element={<AllBlogs />} />
-              <Route path="/blogs/:id" element={<BlogDetail />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/careers" element={<Careers />} />
-              <Route path="/vacancy" element={<Vacancy />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/admin" element={<AdminPanel />} />
-              {/* Add more routes as needed */}
-            </Routes>
-          </div>
-          <Footer />
+          {loading && <Loader />}
+          {/* Main content is hidden while loading */}
+          {!loading && (
+            <>
+              <Navbar />
+              <div style={{ flex: 1 }}>
+                <Routes>
+                  <Route path="/" element={
+                    <>
+                      <Hero />
+                      <Services />
+                      <Blogs />
+                      <About />
+                      <Careers />
+                      <Contact />
+                    </>
+                  } />
+                  <Route path="/login" element={<AuthFlow />} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                  <Route path="/profile/edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
+                  <Route path="/services" element={<Services />} />
+                  <Route path="/blogs" element={<AllBlogs />} />
+                  <Route path="/blogs/:id" element={<BlogDetail />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/careers" element={<Careers />} />
+                  <Route path="/vacancy" element={<Vacancy />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/admin" element={<AdminPanel />} />
+                  {/* Add more routes as needed */}
+                </Routes>
+              </div>
+              <Footer />
 
-          {/* Newsletter Popup */}
-          <Slide direction="up" in={showNewsletter} mountOnEnter unmountOnExit>
-            <Paper elevation={6} sx={{ position: 'fixed', bottom: 24, left: 0, right: 0, mx: 'auto', maxWidth: 400, zIndex: 1400, p: 3, borderRadius: 3, bgcolor: '#fff', boxShadow: 6, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Box sx={{ fontWeight: 700, fontSize: 20, mb: 1, color: '#222' }}>Subscribe to our Newsletter</Box>
-              <Box sx={{ color: '#555', mb: 2, fontSize: 15, textAlign: 'center' }}>Get updates on new jobs, blogs, and more!</Box>
-              <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1 }}>
-                <TextField
-                  size="small"
-                  placeholder="Your email"
-                  value={newsletterEmail}
-                  onChange={e => setNewsletterEmail(e.target.value)}
-                  sx={{ bgcolor: '#f5f5f5', borderRadius: 1, flex: 1 }}
-                  disabled={newsletterLoading}
-                />
-                <Button variant="contained" onClick={handleNewsletterSubscribe} disabled={newsletterLoading} sx={{ minWidth: 110 }}>
-                  {newsletterLoading ? 'Subscribing...' : 'Subscribe'}
-                </Button>
-              </Box>
-              <Button size="small" sx={{ color: '#888', mt: 0.5 }} onClick={() => setShowNewsletter(false)}>No thanks</Button>
-              {newsletterMsg && (
-                <Alert severity={newsletterMsg.type} sx={{ mt: 1, width: '100%' }}>{newsletterMsg.text}</Alert>
-              )}
-            </Paper>
-          </Slide>
+              {/* Newsletter Popup */}
+              <Slide direction="up" in={showNewsletter} mountOnEnter unmountOnExit>
+                <Paper elevation={6} sx={{ position: 'fixed', bottom: 24, left: 0, right: 0, mx: 'auto', maxWidth: 400, zIndex: 1400, p: 3, borderRadius: 3, bgcolor: '#fff', boxShadow: 6, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Box sx={{ fontWeight: 700, fontSize: 20, mb: 1, color: '#222' }}>Subscribe to our Newsletter</Box>
+                  <Box sx={{ color: '#555', mb: 2, fontSize: 15, textAlign: 'center' }}>Get updates on new jobs, blogs, and more!</Box>
+                  <Box sx={{ display: 'flex', gap: 1, width: '100%', mb: 1 }}>
+                    <TextField
+                      size="small"
+                      placeholder="Your email"
+                      value={newsletterEmail}
+                      onChange={e => setNewsletterEmail(e.target.value)}
+                      sx={{ bgcolor: '#f5f5f5', borderRadius: 1, flex: 1 }}
+                      disabled={newsletterLoading}
+                    />
+                    <Button variant="contained" onClick={handleNewsletterSubscribe} disabled={newsletterLoading} sx={{ minWidth: 110 }}>
+                      {newsletterLoading ? 'Subscribing...' : 'Subscribe'}
+                    </Button>
+                  </Box>
+                  <Button size="small" sx={{ color: '#888', mt: 0.5 }} onClick={() => setShowNewsletter(false)}>No thanks</Button>
+                  {newsletterMsg && (
+                    <Alert severity={newsletterMsg.type} sx={{ mt: 1, width: '100%' }}>{newsletterMsg.text}</Alert>
+                  )}
+                </Paper>
+              </Slide>
 
-          {/* Cookie Consent Popup */}
-          <Snackbar
-            open={showCookie}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-            sx={{ zIndex: 2000 }}
-          >
-            <Paper elevation={6} sx={{ p: 2, borderRadius: 2, bgcolor: '#222', color: '#fff', display: 'flex', alignItems: 'center', gap: 2 }}>
-              <span>We use cookies to improve your experience. By using this site, you accept our cookie policy.</span>
-              <Button variant="contained" color="primary" size="small" onClick={handleAcceptCookie} sx={{ ml: 2 }}>
-                Accept
-              </Button>
-            </Paper>
-          </Snackbar>
+              {/* Cookie Consent Popup */}
+              <Snackbar
+                open={showCookie}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                sx={{ zIndex: 2000 }}
+              >
+                <Paper elevation={6} sx={{ p: 2, borderRadius: 2, bgcolor: '#222', color: '#fff', display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <span>We use cookies to improve your experience. By using this site, you accept our cookie policy.</span>
+                  <Button variant="contained" color="primary" size="small" onClick={handleAcceptCookie} sx={{ ml: 2 }}>
+                    Accept
+                  </Button>
+                </Paper>
+              </Snackbar>
+            </>
+          )}
         </div>
       </Router>
     </AuthProvider>

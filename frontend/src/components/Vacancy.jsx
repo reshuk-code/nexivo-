@@ -17,6 +17,7 @@ import {
   Divider
 } from '@mui/material';
 import { WorkOutline, LocationOn, Schedule, Description } from '@mui/icons-material';
+import Loader from './Loader';
 
 const BASE_URL = 'https://nexivo.onrender.com';
 
@@ -126,11 +127,7 @@ export default function Vacancy() {
   };
 
   if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <CircularProgress />
-      </Box>
-    );
+    return <Loader />;
   }
 
   return (
