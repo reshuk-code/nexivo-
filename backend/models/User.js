@@ -14,4 +14,15 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+// Static method to count accounts for an email
+userSchema.statics.countAccountsByEmail = async function(email) {
+  return await this.countDocuments({ email });
+};
+
+// Static method to check if email has reached account limit
+userSchema.statics.hasReachedAccountLimit = async function(email) {
+  const count = await this.countAccountsByEmail(email);
+  return count >= 5; // Maximum 5 accounts per email
+};
+
 module.exports = mongoose.model('User', userSchema); 

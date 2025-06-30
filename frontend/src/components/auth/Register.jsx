@@ -18,6 +18,8 @@ export default function Register({ onSwitch, onVerified }) {
     if (res.message) {
       setSuccess(res.message);
       setTimeout(() => setShowVerify(true), 100);
+    } else if (res.error === 'Account limit reached') {
+      setError('यो इमेलबाट अधिकतम ५ वटा अकाउन्ट मात्र बनाउन सकिन्छ। कृपया अर्को इमेल प्रयोग गर्नुहोस्।');
     } else setError(res.error || 'Registration failed');
   };
 
