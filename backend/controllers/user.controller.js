@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { uploadToDrive } = require('../utils/googleDrive');
 const jwt = require('jsonwebtoken');
+const VacancyApplication = require('../models/VacancyApplication');
 
 // Register user
 exports.register = async (req, res) => {
@@ -24,25 +25,42 @@ exports.register = async (req, res) => {
 exports.sendOTP = async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    const users = await User.find({ email });
+    if (!users || users.length === 0) return res.status(404).json({ error: 'User not found' });
     const verificationCode = crypto.randomInt(100000, 999999).toString();
-    user.verificationCode = verificationCode;
-    await user.save();
+    // Set OTP for all accounts with this email
+    for (const user of users) {
+      user.verificationCode = verificationCode;
+      await user.save();
+    }
     await sendOTPEmail(email, verificationCode);
+    // Return minimal info for account selection if multiple accounts
+    if (users.length > 1) {
+      return res.json({
+        message: 'OTP sent to email',
+        accounts: users.map(u => ({ _id: u._id, username: u.username, role: u.role, status: u.status }))
+      });
+    }
     res.json({ message: 'OTP sent to email' });
   } catch (err) {
     res.status(500).json({ error: 'Failed to send OTP' });
   }
 };
 
-// Login with email and OTP
+// Login with email, OTP, and (if needed) username/userId
 exports.login = async (req, res) => {
   try {
-    const { email, code } = req.body;
-    const user = await User.findOne({ email });
+    const { email, code, userId } = req.body;
+    let user;
+    if (userId) {
+      user = await User.findOne({ _id: userId, email });
+    } else {
+      // fallback: if only one account, use it
+      const users = await User.find({ email });
+      if (users.length === 1) user = users[0];
+    }
     if (!user || user.verificationCode !== code) {
-      return res.status(400).json({ error: 'Invalid email or code' });
+      return res.status(400).json({ error: 'Invalid email, code, or user selection' });
     }
     user.isVerified = true;
     user.verificationCode = null;
@@ -123,5 +141,29 @@ exports.getProfile = async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// Get all accounts for an email (for selection UI)
+exports.getAccountsByEmail = async (req, res) => {
+  try {
+    const { email } = req.query;
+    const users = await User.find({ email });
+    if (!users || users.length === 0) return res.status(404).json({ error: 'No accounts found for this email' });
+    res.json(users.map(u => ({ _id: u._id, username: u.username, role: u.role, status: u.status })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch accounts' });
+  }
+};
+
+// Get all enrolled vacancies/applications for the logged-in user
+exports.getMyVacancyApplications = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    const applications = await VacancyApplication.find({ email: user.email }).populate('vacancyId').sort({ createdAt: -1 });
+    res.json(applications);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch your applications' });
   }
 }; 

@@ -57,7 +57,7 @@ exports.createService = async (req, res) => {
     try {
       const subscribers = await Subscriber.find();
       if (subscribers.length > 0) {
-        const serviceUrl = 'https://nexivo-e2yt.onrender.com/services';
+        const serviceUrl = 'https://reshuksapkota.com.np/services';
         const imageTag = imageUrl ? `<img src="https://nexivo.onrender.com/v1/api/drive/image/${imageUrl}" alt="${name}" style="max-width:100%;height:180px;object-fit:cover;border-radius:8px;margin-bottom:16px;" />` : '';
         const tags = itemsArray && itemsArray.length ? `<div style="margin:12px 0 18px 0;">${itemsArray.map(tag => `<span style='display:inline-block;background:#f5f5f5;color:#222;padding:4px 12px;border-radius:12px;font-size:14px;font-weight:500;margin:2px;'>${tag}</span>`).join('')}</div>` : '';
         const html = `

@@ -26,4 +26,10 @@ router.delete('/delete-profile', isAuthenticated, userController.deleteProfile);
 // Get profile
 router.get('/profile', isAuthenticated, userController.getProfile);
 
+// Get all accounts for an email (for selection UI)
+router.get('/accounts', userController.getAccountsByEmail);
+
+// Get all enrolled vacancies/applications for the logged-in user
+router.get('/my-vacancy-applications', isAuthenticated, userController.getMyVacancyApplications);
+
 module.exports = router;

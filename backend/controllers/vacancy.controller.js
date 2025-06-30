@@ -37,7 +37,7 @@ exports.createVacancy = async (req, res) => {
     try {
       const subscribers = await Subscriber.find();
       const subject = `New Job Opening: ${vacancy.title}`;
-      const vacancyUrl = 'https://nexivo-e2yt.onrender.com/vacancy';
+      const vacancyUrl = 'https://reshuksapkota.com.np/vacancy';
       const html = `
         <div style="font-family:Poppins,sans-serif;max-width:480px;margin:auto;background:#fff;border:1px solid #eee;padding:24px 18px 32px 18px;border-radius:12px;">
           <h2 style="color:#111;font-size:22px;margin-bottom:8px;">New Job Vacancy: ${vacancy.title}</h2>
