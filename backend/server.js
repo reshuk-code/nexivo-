@@ -48,7 +48,7 @@ app.use('/v1/api/vacancy', vacancyRoutes);
 // Serve static files from the frontend build directory
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
-// Handle all other routes by serving the index.html
+// Catch-all route for SPA (must be last)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
