@@ -20,5 +20,14 @@ export default defineConfig({
       }
     },
     chunkSizeWarningLimit: 1000 // (KB) - optional, warning limit बढाउन
-  }
+  },
+  // Add SPA fallback
+  preview: {
+    port: 3000,
+    host: true,
+    strictPort: true,
+  },
+  // Configure base path and output directory
+  base: '/',
+  outDir: 'dist'
 })

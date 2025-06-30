@@ -35,6 +35,7 @@ mongoose.connect('mongodb+srv://reshuksapkota2007:UF67TwWd8i7rC9XU@cluster0.jzxt
   console.error('MongoDB connection error:', err);
 });
 
+// API Routes
 app.use('/v1/api/user', userRoutes);
 app.use('/v1/api/services', servicesRoutes);
 app.use('/v1/api/join', joinRoutes);
@@ -43,6 +44,14 @@ app.use('/v1/api/contact', contactRoutes);
 app.use('/v1/api/blogs', blogRoutes);
 app.use('/v1/api/drive', driveRoutes);
 app.use('/v1/api/vacancy', vacancyRoutes);
+
+// Serve static files from the frontend build directory
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// Handle all other routes by serving the index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
 
 app.listen(PORT, () => {
   console.log(`Website running on http://localhost:${PORT}`);
