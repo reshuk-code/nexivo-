@@ -3,7 +3,7 @@ const router = express.Router();
 const { drive } = require('../utils/googleDrive');
 
 // Proxy image fetch from Google Drive with backend auth
-router.get('/v1/api/drive/image/:id', async (req, res) => {
+router.get('/image/:id', async (req, res) => {
   try {
     const fileId = req.params.id;
     const driveRes = await drive.files.get(
