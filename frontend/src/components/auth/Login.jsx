@@ -11,6 +11,8 @@ export default function Login({ onSwitch, verifiedMsg }) {
   const [success, setSuccess] = useState(verifiedMsg || '');
   const [accounts, setAccounts] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState('');
+  const [showAccountSelect, setShowAccountSelect] = useState(false);
+  const [accountOptions, setAccountOptions] = useState([]);
 
   const handleSendOTP = async () => {
     setError(''); setSuccess('');
@@ -31,6 +33,11 @@ export default function Login({ onSwitch, verifiedMsg }) {
     else setError(res.error || 'Login failed');
   };
 
+  const handleAccountSelect = (userId) => {
+    setSelectedUserId(userId);
+    setShowAccountSelect(false);
+  };
+
   return (
     <Box sx={{ maxWidth: 360, mx: 'auto', mt: 6, p: 3, borderRadius: 3, boxShadow: 2, bgcolor: '#fff' }}>
       <Typography variant="h5" fontWeight={700} mb={2}>Login</Typography>
@@ -46,7 +53,7 @@ export default function Login({ onSwitch, verifiedMsg }) {
           <Select
             value={selectedUserId}
             label="Select Account"
-            onChange={e => setSelectedUserId(e.target.value)}
+            onChange={e => handleAccountSelect(e.target.value)}
             disabled={loading}
           >
             {accounts.map(acc => (
@@ -56,6 +63,16 @@ export default function Login({ onSwitch, verifiedMsg }) {
             ))}
           </Select>
         </FormControl>
+      )}
+      {showAccountSelect && (
+        <div>
+          <h3>Choose your account</h3>
+          {accountOptions.map(acc => (
+            <button key={acc._id} onClick={() => handleAccountSelect(acc._id)}>
+              {acc.username}
+            </button>
+          ))}
+        </div>
       )}
       {otpSent && <>
         <TextField label="OTP Code" fullWidth margin="normal" value={code} onChange={e => setCode(e.target.value)} disabled={loading} />

@@ -176,25 +176,11 @@ exports.getProfile = async (req, res) => {
 exports.getAccountsByEmail = async (req, res) => {
   try {
     const { email } = req.query;
-    const users = await User.find({ email });
-    if (!users || users.length === 0) return res.status(404).json({ error: 'No accounts found for this email' });
-    
-    const accountCount = users.length;
-    const accountsRemaining = 5 - accountCount;
-    
-    res.json({
-      accounts: users.map(u => ({ 
-        _id: u._id, 
-        username: u.username, 
-        role: u.role, 
-        status: u.status 
-      })),
-      accountCount,
-      accountsRemaining,
-      hasReachedLimit: accountCount >= 5
-    });
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+    const users = await User.find({ email }).select('_id username email profileImage');
+    res.json(users);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch accounts' });
+    res.status(500).json({ error: 'Server error' });
   }
 };
 
