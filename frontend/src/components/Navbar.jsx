@@ -19,6 +19,8 @@ const navItems = [
   { label: 'Careers', icon: <WorkOutlineIcon fontSize="small" />, href: '/vacancy' },
 ];
 
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://nexivo.onrender.com';
+
 export default function Navbar() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -27,15 +29,14 @@ export default function Navbar() {
   const handleProfileMenu = (e) => setAnchorEl(e.currentTarget);
   const handleCloseMenu = () => setAnchorEl(null);
 
-  // Helper to extract Google Drive file ID and get backend proxy URL
   const getProfileImage = (img) => {
-    if (!img) return undefined;
-    if (!img.includes('/') && !img.startsWith('http')) return `https://nexivo.onrender.com/v1/api/drive/image/${img}`;
-    const match = img.match(/id=([a-zA-Z0-9_-]+)/);
-    if (match) return `https://nexivo.onrender.com/v1/api/drive/image/${match[1]}`;
-    const shareMatch = img.match(/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (shareMatch) return `https://nexivo.onrender.com/v1/api/drive/image/${shareMatch[1]}`;
-    return undefined;
+    if (!img) return '';
+    if (!img.includes('/') && !img.startsWith('http')) return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
+    const match = img.match(/[-\w]{25,}/);
+    if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[1]}`;
+    const shareMatch = img.match(/[-\w]{25,}/);
+    if (shareMatch) return `${BACKEND_BASE_URL}/v1/api/drive/image/${shareMatch[1]}`;
+    return img;
   };
 
   return (

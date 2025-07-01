@@ -45,14 +45,6 @@ app.use('/v1/api/blogs', blogRoutes);
 app.use('/v1/api/drive', driveRoutes);
 app.use('/v1/api/vacancy', vacancyRoutes);
 
-// Serve static files from the frontend build directory
-app.use(express.static(path.join(__dirname, '../frontend/dist')));
-
-// Catch-all route for SPA (must be last)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
-});
-
 app.listen(PORT, () => {
   console.log(`Website running on http://localhost:${PORT}`);
 });

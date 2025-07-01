@@ -67,7 +67,7 @@ const swiperStyles = `
   }
 `;
 
-const BASE_URL = 'https://nexivo.onrender.com';
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://nexivo.onrender.com';
 
 const companyTypes = [
   'IT', 'Finance', 'Education', 'Healthcare', 'Manufacturing', 'Retail', 'Other'
@@ -77,13 +77,13 @@ const professions = [
 ];
 
 // Helper to get Google Drive image URL from file ID or old URL
-function getServiceImage(img) {
-  if (!img) return null;
-  if (!img.includes('/') && !img.startsWith('http')) return `https://nexivo.onrender.com/v1/api/drive/image/${img}`;
-  const match = img.match(/id=([a-zA-Z0-9_-]+)/);
-  if (match) return `https://nexivo.onrender.com/v1/api/drive/image/${match[1]}`;
-  const shareMatch = img.match(/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (shareMatch) return `https://nexivo.onrender.com/v1/api/drive/image/${shareMatch[1]}`;
+function getImageUrl(img) {
+  if (!img) return '';
+  if (!img.includes('/') && !img.startsWith('http')) return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
+  const match = img.match(/[-\w]{25,}/);
+  if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[1]}`;
+  const shareMatch = img.match(/[-\w]{25,}/);
+  if (shareMatch) return `${BACKEND_BASE_URL}/v1/api/drive/image/${shareMatch[1]}`;
   return img;
 }
 
@@ -107,7 +107,7 @@ export default function Services() {
   const { user, token } = useAuth();
 
   useEffect(() => {
-    fetch(BASE_URL + '/v1/api/services')
+    fetch(BACKEND_BASE_URL + '/v1/api/services')
       .then(res => res.json())
       .then(data => setServices(Array.isArray(data) ? data : []));
   }, []);
@@ -142,7 +142,7 @@ export default function Services() {
         serviceName: enrollmentModal.service.name,
         userId: user._id
       };
-      const res = await fetch(BASE_URL + '/v1/api/services/enroll', {
+      const res = await fetch(BACKEND_BASE_URL + '/v1/api/services/enroll', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -237,9 +237,9 @@ export default function Services() {
                     mb: 2
                   }}>
                     <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-                      {getServiceImage(s.image) && (
+                      {getImageUrl(s.image) && (
                         <img
-                          src={getServiceImage(s.image)}
+                          src={getImageUrl(s.image)}
                           alt={s.name}
                           style={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 0, marginBottom: 18 }}
                         />
@@ -305,9 +305,9 @@ export default function Services() {
                     mb: 2
                   }}>
                     <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-                      {getServiceImage(s.image) && (
+                      {getImageUrl(s.image) && (
                         <img
-                          src={getServiceImage(s.image)}
+                          src={getImageUrl(s.image)}
                           alt={s.name}
                           style={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 0, marginBottom: 18 }}
                         />

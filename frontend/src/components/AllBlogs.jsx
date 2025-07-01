@@ -20,16 +20,16 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import Loader from './Loader';
 
-const BASE_URL = 'https://nexivo.onrender.com';
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://nexivo.onrender.com';
 
 // Helper to get Google Drive image URL from file ID or old URL
 function getThumbnailUrl(img) {
-  if (!img) return null;
-  if (!img.includes('/') && !img.startsWith('http')) return `https://nexivo.onrender.com/v1/api/drive/image/${img}`;
-  const match = img.match(/id=([a-zA-Z0-9_-]+)/);
-  if (match) return `https://nexivo.onrender.com/v1/api/drive/image/${match[1]}`;
-  const shareMatch = img.match(/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (shareMatch) return `https://nexivo.onrender.com/v1/api/drive/image/${shareMatch[1]}`;
+  if (!img) return '';
+  if (!img.includes('/') && !img.startsWith('http')) return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
+  const match = img.match(/[-\w]{25,}/);
+  if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[1]}`;
+  const shareMatch = img.match(/[-\w]{25,}/);
+  if (shareMatch) return `${BACKEND_BASE_URL}/v1/api/drive/image/${shareMatch[1]}`;
   return img;
 }
 
@@ -39,7 +39,7 @@ export default function AllBlogs() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(BASE_URL + '/v1/api/blogs')
+    fetch(BACKEND_BASE_URL + '/v1/api/blogs')
       .then(res => res.json())
       .then(data => {
         setBlogs(Array.isArray(data) ? data : []);

@@ -3,6 +3,8 @@ import { Box, Typography, Button, Avatar, Stack, Card, CardContent, Chip, Circul
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://nexivo.onrender.com';
+
 export default function Profile() {
   const { user, logout, fetchProfile, token } = useAuth();
   const navigate = useNavigate();
@@ -28,16 +30,13 @@ export default function Profile() {
 
   // Helper to extract Google Drive file ID and get backend proxy URL
   const getProfileImage = (img) => {
-    if (!img) return undefined;
-    // If already a file ID (no slashes, no http), return as is
-    if (!img.includes('/') && !img.startsWith('http')) return `https://nexivo.onrender.com/v1/api/drive/image/${img}`;
-    // If Google Drive URL, extract id param
-    const match = img.match(/id=([a-zA-Z0-9_-]+)/);
-    if (match) return `https://nexivo.onrender.com/v1/api/drive/image/${match[1]}`;
-    // If shared link format
-    const shareMatch = img.match(/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (shareMatch) return `https://nexivo.onrender.com/v1/api/drive/image/${shareMatch[1]}`;
-    return undefined;
+    if (!img) return '';
+    if (!img.includes('/') && !img.startsWith('http')) return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
+    const match = img.match(/[-\w]{25,}/);
+    if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[1]}`;
+    const shareMatch = img.match(/[-\w]{25,}/);
+    if (shareMatch) return `${BACKEND_BASE_URL}/v1/api/drive/image/${shareMatch[1]}`;
+    return img;
   };
 
   return (
