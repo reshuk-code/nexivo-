@@ -77,28 +77,37 @@ exports.sendOTP = async (req, res) => {
 
 // Login with email, OTP, and (if needed) username/userId
 exports.login = async (req, res) => {
-  try {
-    const { email, code, userId } = req.body;
-    let user;
-    if (userId) {
-      user = await User.findOne({ _id: userId, email });
-    } else {
-      // fallback: if only one account, use it
-      const users = await User.find({ email });
-      if (users.length === 1) user = users[0];
-    }
-    if (!user || user.verificationCode !== code) {
-      return res.status(400).json({ error: 'Invalid email, code, or user selection' });
-    }
-    user.isVerified = true;
-    user.verificationCode = null;
-    await user.save();
-    // Generate and return JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    res.json({ message: 'Login successful', user, token });
-  } catch (err) {
-    res.status(500).json({ error: 'Login failed' });
+  const { email, password } = req.body;
+  const users = await User.find({ email });
+  if (!users.length) return res.status(404).json({ error: 'No account found' });
+
+  // Password check सबै accounts मा गर्नुहोस्
+  const validUsers = [];
+  for (const user of users) {
+    const isMatch = await user.comparePassword(password);
+    if (isMatch) validUsers.push(user);
   }
+  if (!validUsers.length) return res.status(401).json({ error: 'Invalid credentials' });
+
+  // यदि एकभन्दा बढी valid accounts छन् भने, सबैको list पठाउनुहोस्
+  if (validUsers.length > 1) {
+    return res.json({
+      multiple: true,
+      accounts: validUsers.map(u => ({
+        _id: u._id,
+        username: u.username,
+        email: u.email,
+        profileImage: u.profileImage,
+        status: u.status,
+        role: u.role
+      }))
+    });
+  }
+
+  // एक मात्र valid account छ भने, सिधै login success
+  const user = validUsers[0];
+  // ...token generate, response etc...
+  res.json({ user, token: generateToken(user) });
 };
 
 // Verify email (OTP)

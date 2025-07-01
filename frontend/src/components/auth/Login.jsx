@@ -29,13 +29,27 @@ export default function Login({ onSwitch, verifiedMsg }) {
   const handleLogin = async () => {
     setError(''); setSuccess('');
     const res = await login(email, code, accounts.length > 1 ? selectedUserId : undefined);
-    if (res.success) setSuccess('Login successful!');
-    else setError(res.error || 'Login failed');
+    if (res.multiple) {
+      setAccounts(res.accounts);
+      setOtpSent(true);
+      setSuccess('Multiple accounts found. Please select your account.');
+    } else if (res.user) {
+      setSuccess('Login successful!');
+      loginUser(res.user, res.token);
+    } else {
+      setError(res.error || 'Login failed');
+    }
   };
 
-  const handleAccountSelect = (userId) => {
+  const handleAccountSelect = async (userId) => {
     setSelectedUserId(userId);
     setShowAccountSelect(false);
+    const res = await fetch('/v1/api/user/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password: code, userId })
+    });
+    const data = await res.json();
+    if (data.user) loginUser(data.user, data.token);
   };
 
   return (
@@ -47,29 +61,12 @@ export default function Login({ onSwitch, verifiedMsg }) {
       {!otpSent && <Button fullWidth variant="contained" sx={{ bgcolor: '#000', color: '#fff', mb: 2 }} onClick={handleSendOTP} disabled={loading || !email}>
         {loading ? <CircularProgress size={22} /> : 'Send OTP'}
       </Button>}
-      {otpSent && accounts.length > 1 && (
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Select Account</InputLabel>
-          <Select
-            value={selectedUserId}
-            label="Select Account"
-            onChange={e => handleAccountSelect(e.target.value)}
-            disabled={loading}
-          >
-            {accounts.map(acc => (
-              <MenuItem key={acc._id} value={acc._id}>
-                {acc.username} ({acc.role}, {acc.status})
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      )}
-      {showAccountSelect && (
+      {otpSent && accounts.length > 0 && (
         <div>
           <h3>Choose your account</h3>
-          {accountOptions.map(acc => (
+          {accounts.map(acc => (
             <button key={acc._id} onClick={() => handleAccountSelect(acc._id)}>
-              {acc.username}
+              {acc.username} ({acc.role}, {acc.status})
             </button>
           ))}
         </div>
