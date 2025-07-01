@@ -31,12 +31,9 @@ export default function Navbar() {
 
   const getProfileImage = (img) => {
     if (!img) return '';
-    if (!img.includes('/') && !img.startsWith('http')) return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
     const match = img.match(/[-\w]{25,}/);
-    if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[1]}`;
-    const shareMatch = img.match(/[-\w]{25,}/);
-    if (shareMatch) return `${BACKEND_BASE_URL}/v1/api/drive/image/${shareMatch[1]}`;
-    return img;
+    if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[0]}`;
+    return '';
   };
 
   return (

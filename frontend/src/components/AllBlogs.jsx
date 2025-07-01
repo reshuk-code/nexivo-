@@ -172,12 +172,18 @@ export default function AllBlogs() {
                       <img
                         src={getThumbnailUrl(blog.thumbnail)}
                         alt={blog.title}
-                        style={{ 
-                          width: '100%', 
-                          height: '100%', 
+                        style={{
+                          width: '100%',
+                          height: 180,
                           objectFit: 'cover',
-                          display: 'block'
+                          borderRadius: 12,
+                          boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                          transition: 'transform 0.2s',
+                          marginBottom: 12,
+                          cursor: 'pointer',
                         }}
+                        onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.03)')}
+                        onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')}
                       />
                     </Box>
                   )}

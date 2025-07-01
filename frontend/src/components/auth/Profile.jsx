@@ -31,18 +31,26 @@ export default function Profile() {
   // Helper to extract Google Drive file ID and get backend proxy URL
   const getProfileImage = (img) => {
     if (!img) return '';
-    if (!img.includes('/') && !img.startsWith('http')) return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
     const match = img.match(/[-\w]{25,}/);
-    if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[1]}`;
-    const shareMatch = img.match(/[-\w]{25,}/);
-    if (shareMatch) return `${BACKEND_BASE_URL}/v1/api/drive/image/${shareMatch[1]}`;
-    return img;
+    if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[0]}`;
+    return '';
   };
 
   return (
     <Box sx={{ maxWidth: 400, mx: 'auto', mt: 6, p: 3, borderRadius: 3, boxShadow: 2, bgcolor: '#fff' }}>
       <Stack alignItems="center" spacing={2}>
-        <Avatar src={getProfileImage(user.profileImage)} sx={{ width: 80, height: 80, mb: 1 }} />
+        <Avatar
+          src={getProfileImage(user.profileImage)}
+          sx={{
+            width: 100,
+            height: 100,
+            mb: 2,
+            boxShadow: '0 2px 12px rgba(0,0,0,0.10)',
+            border: '3px solid #fff',
+            background: '#f5f5f5',
+            objectFit: 'cover',
+          }}
+        />
         <Typography variant="h6" fontWeight={700}>{user.username}</Typography>
         <Typography color="text.secondary">{user.email}</Typography>
         <Typography color="text.secondary">{user.phone}</Typography>

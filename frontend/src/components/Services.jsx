@@ -79,12 +79,10 @@ const professions = [
 // Helper to get Google Drive image URL from file ID or old URL
 function getImageUrl(img) {
   if (!img) return '';
-  if (!img.includes('/') && !img.startsWith('http')) return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
+  // केवल 25+ character को fileId मात्र निकाल्ने
   const match = img.match(/[-\w]{25,}/);
-  if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[1]}`;
-  const shareMatch = img.match(/[-\w]{25,}/);
-  if (shareMatch) return `${BACKEND_BASE_URL}/v1/api/drive/image/${shareMatch[1]}`;
-  return img;
+  if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[0]}`;
+  return '';
 }
 
 export default function Services() {
@@ -241,7 +239,18 @@ export default function Services() {
                         <img
                           src={getImageUrl(s.image)}
                           alt={s.name}
-                          style={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 0, marginBottom: 18 }}
+                          style={{
+                            width: '100%',
+                            height: 180,
+                            objectFit: 'cover',
+                            borderRadius: 12,
+                            boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                            transition: 'transform 0.2s',
+                            marginBottom: 12,
+                            cursor: 'pointer',
+                          }}
+                          onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.03)')}
+                          onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')}
                         />
                       )}
                       <Typography variant="h5" fontWeight={900} sx={{ mb: 2, color: '#111', letterSpacing: 1, fontFamily: 'Poppins' }}>{s.name}</Typography>
@@ -309,7 +318,18 @@ export default function Services() {
                         <img
                           src={getImageUrl(s.image)}
                           alt={s.name}
-                          style={{ width: '100%', height: 180, objectFit: 'cover', borderRadius: 0, marginBottom: 18 }}
+                          style={{
+                            width: '100%',
+                            height: 180,
+                            objectFit: 'cover',
+                            borderRadius: 12,
+                            boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                            transition: 'transform 0.2s',
+                            marginBottom: 12,
+                            cursor: 'pointer',
+                          }}
+                          onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.03)')}
+                          onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')}
                         />
                       )}
                       <Typography variant="h5" fontWeight={900} sx={{ mb: 2, color: '#111', letterSpacing: 1, fontFamily: 'Poppins' }}>{s.name}</Typography>

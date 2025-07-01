@@ -24,12 +24,7 @@ const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://nexivo.onr
 // Helper to get Google Drive image URL from file ID or old URL
 function getThumbnailUrl(img) {
   if (!img) return '';
-  if (!img.includes('/') && !img.startsWith('http')) return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
-  const match = img.match(/[-\w]{25,}/);
-  if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[1]}`;
-  const shareMatch = img.match(/[-\w]{25,}/);
-  if (shareMatch) return `${BACKEND_BASE_URL}/v1/api/drive/image/${shareMatch[1]}`;
-  return img;
+  return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
 }
 
 export default function Blogs() {
@@ -131,12 +126,18 @@ export default function Blogs() {
                     <img
                       src={getThumbnailUrl(blog.thumbnail)}
                       alt={blog.title}
-                      style={{ 
-                        width: '100%', 
-                        height: '100%', 
+                      style={{
+                        width: '100%',
+                        height: 180,
                         objectFit: 'cover',
-                        display: 'block'
+                        borderRadius: 12,
+                        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                        transition: 'transform 0.2s',
+                        marginBottom: 12,
+                        cursor: 'pointer',
                       }}
+                      onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.03)')}
+                      onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')}
                     />
                   </Box>
                 )}
