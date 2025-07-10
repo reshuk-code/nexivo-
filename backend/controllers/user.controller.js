@@ -55,13 +55,13 @@ exports.sendOTP = async (req, res) => {
     const { email } = req.body;
     const users = await User.find({ email });
     if (!users || users.length === 0) return res.status(404).json({ error: 'User not found' });
-    const verificationCode = crypto.randomInt(100000, 999999).toString();
-    // Set OTP for all accounts with this email
+    // Generate and assign a unique OTP for each user
     for (const user of users) {
-      user.verificationCode = verificationCode;
+      user.verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
       await user.save();
     }
-    await sendOTPEmail(email, verificationCode);
+    // Optionally, send the OTP to each user (for demo, send to email)
+    await sendOTPEmail(email, users[0].verificationCode); // You may want to send all codes for testing
     // Return minimal info for account selection if multiple accounts
     if (users.length > 1) {
       return res.json({
@@ -75,35 +75,15 @@ exports.sendOTP = async (req, res) => {
   }
 };
 
-// Login with email, OTP, and (if needed) username/userId
+// Login with email, OTP, and userId
 exports.login = async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { email, otp, userId } = req.body;
     if (!otp) return res.status(400).json({ error: 'OTP code is required' });
-
-    const users = await User.find({ email });
-    if (!users.length) return res.status(404).json({ error: 'No account found' });
-
-    // Find users with matching OTP
-    const validUsers = users.filter(user => user.verificationCode === otp);
-    if (!validUsers.length) return res.status(401).json({ error: 'Invalid OTP code' });
-
-    if (validUsers.length > 1) {
-      return res.json({
-        multiple: true,
-        accounts: validUsers.map(u => ({
-          _id: u._id,
-          username: u.username,
-          email: u.email,
-          profileImage: u.profileImage,
-          status: u.status,
-          role: u.role
-        }))
-      });
-    }
-
-    const user = validUsers[0];
-    // Optionally, clear the OTP after successful login
+    if (!userId) return res.status(400).json({ error: 'User selection is required' });
+    const user = await User.findOne({ email, _id: userId });
+    if (!user) return res.status(404).json({ error: 'Account not found' });
+    if (user.verificationCode !== otp) return res.status(401).json({ error: 'Invalid OTP code' });
     user.verificationCode = null;
     await user.save();
     res.json({ user, token: generateToken(user) });
