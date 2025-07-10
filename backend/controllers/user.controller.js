@@ -62,14 +62,11 @@ exports.sendOTP = async (req, res) => {
     }
     // Optionally, send the OTP to each user (for demo, send to email)
     await sendOTPEmail(email, users[0].verificationCode); // You may want to send all codes for testing
-    // Return minimal info for account selection if multiple accounts
-    if (users.length > 1) {
-      return res.json({
-        message: 'OTP sent to email',
-        accounts: users.map(u => ({ _id: u._id, username: u.username, role: u.role, status: u.status }))
-      });
-    }
-    res.json({ message: 'OTP sent to email' });
+    // Always return the accounts array for selection
+    return res.json({
+      message: 'OTP sent to email',
+      accounts: users.map(u => ({ _id: u._id, username: u.username, role: u.role, status: u.status }))
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to send OTP' });
   }
