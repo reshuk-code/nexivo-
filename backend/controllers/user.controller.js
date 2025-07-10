@@ -6,6 +6,14 @@ const { uploadToDrive } = require('../utils/googleDrive');
 const jwt = require('jsonwebtoken');
 const VacancyApplication = require('../models/VacancyApplication');
 
+function generateToken(user) {
+  return jwt.sign(
+    { id: user._id, email: user.email, role: user.role },
+    process.env.JWT_SECRET || 'your_jwt_secret',
+    { expiresIn: '7d' }
+  );
+}
+
 // Register user
 exports.register = async (req, res) => {
   try {

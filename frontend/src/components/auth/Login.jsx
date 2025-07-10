@@ -18,7 +18,10 @@ export default function Login({ onSwitch, verifiedMsg }) {
     if (res.accounts) {
       setAccounts(res.accounts);
       setOtpSent(true);
-      setSuccess('OTP sent to your email. Please select your account.');
+      setSuccess('OTP sent to your email.' + (res.accounts.length > 1 ? ' Please select your account.' : ''));
+      if (res.accounts.length === 1) {
+        setSelectedUserId(res.accounts[0]._id);
+      }
     } else if (res.message) {
       setOtpSent(true); setSuccess('OTP sent to your email.');
     } else setError(res.error || 'Failed to send OTP');
@@ -48,7 +51,7 @@ export default function Login({ onSwitch, verifiedMsg }) {
       {!otpSent && <Button fullWidth variant="contained" sx={{ bgcolor: '#000', color: '#fff', mb: 2 }} onClick={handleSendOTP} disabled={loading || !email}>
         {loading ? <CircularProgress size={22} /> : 'Send OTP'}
       </Button>}
-      {otpSent && accounts.length >= 1 && (
+      {otpSent && accounts.length > 1 && (
         <div>
           <Typography variant="subtitle1">Choose your account</Typography>
           {accounts.map(acc => (
