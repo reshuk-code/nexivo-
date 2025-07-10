@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema({
   verificationCode: { type: String }, // OTP for email verification
   services: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Service' }],
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
-  status: { type: String, enum: ['pending', 'verified', 'completed'], default: 'pending' }, // profile status
+  status: { type: String, enum: ['pending', 'verified', 'completed'], default: 'verified' }, // profile status
   createdAt: { type: Date, default: Date.now },
 });
 
