@@ -107,4 +107,32 @@ exports.deleteBlog = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete blog' });
   }
+};
+
+// React to a blog (emoji reaction)
+exports.reactToBlog = async (req, res) => {
+  try {
+    const { emoji } = req.body; // emoji: like, love, angry, wow, haha
+    const validEmojis = ['like', 'love', 'angry', 'wow', 'haha'];
+    if (!validEmojis.includes(emoji)) {
+      return res.status(400).json({ error: 'Invalid emoji' });
+    }
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ error: 'Blog not found' });
+    blog.reactions[emoji] = (blog.reactions[emoji] || 0) + 1;
+    await blog.save();
+    res.json({ reactions: blog.reactions });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to react to blog' });
+  }
+};
+
+// Get other blogs (excluding current)
+exports.getOtherBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find({ _id: { $ne: req.params.id } }).sort({ createdAt: -1 }).limit(5);
+    res.json(blogs);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch other blogs' });
+  }
 }; 

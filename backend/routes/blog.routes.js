@@ -15,5 +15,9 @@ router.get('/:id', blogController.getBlogById);
 router.put('/:id', isAdmin, upload.single('thumbnail'), blogController.updateBlog);
 // Delete blog (admin only)
 router.delete('/:id', isAdmin, blogController.deleteBlog);
+// React to a blog
+router.post('/:id/react', blogController.reactToBlog);
+// Get other blogs (excluding current)
+router.get('/other/:id', blogController.getOtherBlogs);
 
 module.exports = router; 

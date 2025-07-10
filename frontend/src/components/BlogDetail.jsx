@@ -23,6 +23,11 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import EmailIcon from '@mui/icons-material/Email';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import Loader from './Loader';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
+import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://nexivo.onrender.com';
 
@@ -85,6 +90,8 @@ export default function BlogDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [otherBlogs, setOtherBlogs] = useState([]);
+  const [reacting, setReacting] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -99,7 +106,6 @@ export default function BlogDetail() {
       .then(data => {
         setBlog(data);
         setLoading(false);
-        // Update meta tags for social sharing
         updateMetaTags(data);
       })
       .catch(err => {
@@ -107,6 +113,10 @@ export default function BlogDetail() {
         setError(err.message);
         setLoading(false);
       });
+    // Fetch other blogs
+    fetch(BACKEND_BASE_URL + `/v1/api/blogs/other/${id}`)
+      .then(res => res.json())
+      .then(data => setOtherBlogs(Array.isArray(data) ? data : []));
 
     // Cleanup function to reset meta tags when component unmounts
     return () => {
@@ -178,6 +188,36 @@ export default function BlogDetail() {
 
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
+  };
+
+  // Emoji reactions
+  const emojiList = [
+    { key: 'like', icon: <ThumbUpIcon />, label: 'Like' },
+    { key: 'love', icon: <FavoriteIcon />, label: 'Love' },
+    { key: 'angry', icon: <SentimentVeryDissatisfiedIcon />, label: 'Angry' },
+    { key: 'wow', icon: <EmojiObjectsIcon />, label: 'Wow' },
+    { key: 'haha', icon: <EmojiEmotionsIcon />, label: 'Haha' }
+  ];
+
+  const handleReact = async (emoji) => {
+    if (!blog || reacting) return;
+    setReacting(emoji);
+    try {
+      const res = await fetch(BACKEND_BASE_URL + `/v1/api/blogs/${id}/react`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emoji })
+      });
+      const data = await res.json();
+      if (res.ok && data.reactions) {
+        setBlog({ ...blog, reactions: data.reactions });
+      } else {
+        setSnackbar({ open: true, message: data.error || 'Failed to react', severity: 'error' });
+      }
+    } catch (e) {
+      setSnackbar({ open: true, message: 'Failed to react', severity: 'error' });
+    }
+    setTimeout(() => setReacting(''), 500);
   };
 
   if (loading) {
@@ -491,6 +531,37 @@ export default function BlogDetail() {
             </Box>
           </Box>
 
+          {/* Emoji Reactions */}
+          {blog && (
+            <Box sx={{ my: 4, textAlign: 'center' }}>
+              <Typography variant="h6" sx={{ mb: 2 }}>React to this blog:</Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+                {emojiList.map(({ key, icon, label }) => (
+                  <Button
+                    key={key}
+                    onClick={() => handleReact(key)}
+                    disabled={!!reacting}
+                    sx={{
+                      minWidth: 48,
+                      minHeight: 48,
+                      borderRadius: '50%',
+                      fontSize: 24,
+                      bgcolor: reacting === key ? '#ffe082' : '#fff',
+                      boxShadow: reacting === key ? '0 0 8px #ffd600' : 'none',
+                      transition: 'all 0.2s',
+                      mx: 1
+                    }}
+                  >
+                    <Box sx={{ fontSize: 28 }}>{icon}</Box>
+                    <Typography variant="caption" sx={{ ml: 1 }}>
+                      {blog.reactions?.[key] || 0}
+                    </Typography>
+                  </Button>
+                ))}
+              </Box>
+            </Box>
+          )}
+
           {/* Footer */}
           <Divider sx={{ mb: 4, borderColor: '#ddd' }} />
           
@@ -529,6 +600,24 @@ export default function BlogDetail() {
             </Box>
           </Box>
         </Paper>
+        {/* Other Blogs Section */}
+        {otherBlogs.length > 0 && (
+          <Box sx={{ mt: 6 }}>
+            <Divider sx={{ mb: 3 }}><Chip label="Other Blogs" /></Divider>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center' }}>
+              {otherBlogs.map(oblog => (
+                <Paper key={oblog._id} sx={{ width: 320, p: 2, cursor: 'pointer', transition: '0.2s', '&:hover': { boxShadow: 4 } }} onClick={() => navigate(`/blogs/${oblog._id}`)}>
+                  {oblog.thumbnail && (
+                    <img src={getThumbnailUrl(oblog.thumbnail)} alt={oblog.title} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 8, marginBottom: 8 }} />
+                  )}
+                  <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>{oblog.title}</Typography>
+                  <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>{oblog.content.replace(/<[^>]*>/g, '').substring(0, 80)}...</Typography>
+                  <Typography variant="caption" sx={{ color: '#888' }}>By {oblog.author} • {new Date(oblog.createdAt).toLocaleDateString()}</Typography>
+                </Paper>
+              ))}
+            </Box>
+          </Box>
+        )}
       </Container>
 
       {/* Snackbar for copy notification */}
