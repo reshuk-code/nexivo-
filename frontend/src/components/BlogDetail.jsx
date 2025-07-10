@@ -535,24 +535,34 @@ export default function BlogDetail() {
           {blog && (
             <Box sx={{ my: 4, textAlign: 'center' }}>
               <Typography variant="h6" sx={{ mb: 2 }}>React to this blog:</Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  gap: { xs: 1, sm: 2 },
+                  flexWrap: { xs: 'wrap', sm: 'nowrap' },
+                  flexDirection: { xs: 'row', sm: 'row' },
+                  mb: 2
+                }}
+              >
                 {emojiList.map(({ key, icon, label }) => (
                   <Button
                     key={key}
                     onClick={() => handleReact(key)}
                     disabled={!!reacting}
                     sx={{
-                      minWidth: 48,
-                      minHeight: 48,
+                      minWidth: { xs: 36, sm: 48 },
+                      minHeight: { xs: 36, sm: 48 },
                       borderRadius: '50%',
-                      fontSize: 24,
+                      fontSize: { xs: 18, sm: 24 },
                       bgcolor: reacting === key ? '#ffe082' : '#fff',
                       boxShadow: reacting === key ? '0 0 8px #ffd600' : 'none',
                       transition: 'all 0.2s',
-                      mx: 1
+                      mx: { xs: 0.5, sm: 1 },
+                      mb: { xs: 1, sm: 0 }
                     }}
                   >
-                    <Box sx={{ fontSize: 28 }}>{icon}</Box>
+                    <Box sx={{ fontSize: { xs: 22, sm: 28 } }}>{icon}</Box>
                     <Typography variant="caption" sx={{ ml: 1 }}>
                       {blog.reactions?.[key] || 0}
                     </Typography>
@@ -561,63 +571,33 @@ export default function BlogDetail() {
               </Box>
             </Box>
           )}
-
-          {/* Footer */}
-          <Divider sx={{ mb: 4, borderColor: '#ddd' }} />
-          
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Button
-              variant="outlined"
-              startIcon={<ArrowBackIcon />}
-              sx={{
-                borderRadius: 0,
-                fontWeight: 600,
-                fontFamily: 'Poppins',
-                textTransform: 'uppercase',
-                borderColor: '#111',
-                color: '#111',
-                '&:hover': {
-                  bgcolor: '#111',
-                  color: '#fff',
-                  borderColor: '#111'
-                }
-              }}
-              onClick={() => navigate('/')}
-            >
-              Back to Home
-            </Button>
-            
-            <Box sx={{ display: 'flex', gap: 1 }}>
-              <Chip 
-                label="Blog" 
-                sx={{ 
-                  bgcolor: '#f5f5f5', 
-                  color: '#111', 
-                  fontFamily: 'Poppins',
-                  fontWeight: 500
-                }} 
-              />
+          {/* Other Blogs Section */}
+          {otherBlogs.length > 0 && (
+            <Box sx={{ mt: 6 }}>
+              <Divider sx={{ mb: 3 }}><Chip label="Other Blogs" /></Divider>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+                  gap: 3,
+                  justifyContent: 'center',
+                  alignItems: 'stretch'
+                }}
+              >
+                {otherBlogs.map(oblog => (
+                  <Paper key={oblog._id} sx={{ width: '100%', maxWidth: 320, p: 2, cursor: 'pointer', transition: '0.2s', '&:hover': { boxShadow: 4 }, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} onClick={() => navigate(`/blogs/${oblog._id}`)}>
+                    {oblog.thumbnail && (
+                      <img src={getThumbnailUrl(oblog.thumbnail)} alt={oblog.title} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 8, marginBottom: 8 }} />
+                    )}
+                    <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>{oblog.title}</Typography>
+                    <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>{oblog.content.replace(/<[^>]*>/g, '').substring(0, 80)}...</Typography>
+                    <Typography variant="caption" sx={{ color: '#888' }}>By {oblog.author} • {new Date(oblog.createdAt).toLocaleDateString()}</Typography>
+                  </Paper>
+                ))}
+              </Box>
             </Box>
-          </Box>
+          )}
         </Paper>
-        {/* Other Blogs Section */}
-        {otherBlogs.length > 0 && (
-          <Box sx={{ mt: 6 }}>
-            <Divider sx={{ mb: 3 }}><Chip label="Other Blogs" /></Divider>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center' }}>
-              {otherBlogs.map(oblog => (
-                <Paper key={oblog._id} sx={{ width: 320, p: 2, cursor: 'pointer', transition: '0.2s', '&:hover': { boxShadow: 4 } }} onClick={() => navigate(`/blogs/${oblog._id}`)}>
-                  {oblog.thumbnail && (
-                    <img src={getThumbnailUrl(oblog.thumbnail)} alt={oblog.title} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 8, marginBottom: 8 }} />
-                  )}
-                  <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>{oblog.title}</Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>{oblog.content.replace(/<[^>]*>/g, '').substring(0, 80)}...</Typography>
-                  <Typography variant="caption" sx={{ color: '#888' }}>By {oblog.author} • {new Date(oblog.createdAt).toLocaleDateString()}</Typography>
-                </Paper>
-              ))}
-            </Box>
-          </Box>
-        )}
       </Container>
 
       {/* Snackbar for copy notification */}
