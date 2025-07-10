@@ -78,19 +78,15 @@ exports.sendOTP = async (req, res) => {
 // Login with email, OTP, and (if needed) username/userId
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!password) return res.status(400).json({ error: 'Password is required' });
+    const { email, otp } = req.body;
+    if (!otp) return res.status(400).json({ error: 'OTP code is required' });
 
     const users = await User.find({ email });
     if (!users.length) return res.status(404).json({ error: 'No account found' });
 
-    const validUsers = [];
-    for (const user of users) {
-      if (!user.password) continue; // skip users with no password
-      const isMatch = await user.comparePassword(password);
-      if (isMatch) validUsers.push(user);
-    }
-    if (!validUsers.length) return res.status(401).json({ error: 'Invalid credentials' });
+    // Find users with matching OTP
+    const validUsers = users.filter(user => user.verificationCode === otp);
+    if (!validUsers.length) return res.status(401).json({ error: 'Invalid OTP code' });
 
     if (validUsers.length > 1) {
       return res.json({
@@ -107,6 +103,9 @@ exports.login = async (req, res) => {
     }
 
     const user = validUsers[0];
+    // Optionally, clear the OTP after successful login
+    user.verificationCode = null;
+    await user.save();
     res.json({ user, token: generateToken(user) });
   } catch (err) {
     res.status(500).json({ error: 'Login failed', details: err.message });
