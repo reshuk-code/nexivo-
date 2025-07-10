@@ -305,14 +305,20 @@ export default function BlogDetail() {
           </Typography>
         </Breadcrumbs>
 
-        {/* Blog Content */}
-        <Paper sx={{ 
-          p: 6, 
-          borderRadius: 0, 
-          border: '2px solid #111',
-          boxShadow: 'none',
-          background: '#fff'
-        }}>
+        {/* Main Blog Card Responsive */}
+        <Paper
+          sx={{
+            width: { xs: '100%', sm: 420 },
+            maxWidth: 480,
+            mx: { xs: 0, sm: 'auto' },
+            p: { xs: 2, sm: 3 },
+            mb: 4,
+            boxShadow: 2,
+            borderRadius: 2,
+            fontSize: { xs: 16, sm: 18 },
+            lineHeight: 1.6
+          }}
+        >
           {/* Header */}
           <Box sx={{ mb: 4 }}>
             <Typography variant="h3" fontWeight={700} sx={{ 
@@ -530,74 +536,73 @@ export default function BlogDetail() {
               </Tooltip>
             </Box>
           </Box>
-
-          {/* Emoji Reactions */}
-          {blog && (
-            <Box sx={{ my: 4, textAlign: 'center' }}>
-              <Typography variant="h6" sx={{ mb: 2 }}>React to this blog:</Typography>
-              <Box
-                sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: { xs: 1, sm: 2 },
-                  flexWrap: { xs: 'wrap', sm: 'nowrap' },
-                  flexDirection: { xs: 'row', sm: 'row' },
-                  mb: 2
-                }}
-              >
-                {emojiList.map(({ key, icon, label }) => (
-                  <Button
-                    key={key}
-                    onClick={() => handleReact(key)}
-                    disabled={!!reacting}
-                    sx={{
-                      minWidth: { xs: 36, sm: 48 },
-                      minHeight: { xs: 36, sm: 48 },
-                      borderRadius: '50%',
-                      fontSize: { xs: 18, sm: 24 },
-                      bgcolor: reacting === key ? '#ffe082' : '#fff',
-                      boxShadow: reacting === key ? '0 0 8px #ffd600' : 'none',
-                      transition: 'all 0.2s',
-                      mx: { xs: 0.5, sm: 1 },
-                      mb: { xs: 1, sm: 0 }
-                    }}
-                  >
-                    <Box sx={{ fontSize: { xs: 22, sm: 28 } }}>{icon}</Box>
-                    <Typography variant="caption" sx={{ ml: 1 }}>
-                      {blog.reactions?.[key] || 0}
-                    </Typography>
-                  </Button>
-                ))}
-              </Box>
-            </Box>
-          )}
-          {/* Other Blogs Section */}
-          {otherBlogs.length > 0 && (
-            <Box sx={{ mt: 6 }}>
-              <Divider sx={{ mb: 3 }}><Chip label="Other Blogs" /></Divider>
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-                  gap: 3,
-                  justifyContent: 'center',
-                  alignItems: 'stretch'
-                }}
-              >
-                {otherBlogs.map(oblog => (
-                  <Paper key={oblog._id} sx={{ width: '100%', maxWidth: 320, p: 2, cursor: 'pointer', transition: '0.2s', '&:hover': { boxShadow: 4 }, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} onClick={() => navigate(`/blogs/${oblog._id}`)}>
-                    {oblog.thumbnail && (
-                      <img src={getThumbnailUrl(oblog.thumbnail)} alt={oblog.title} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 8, marginBottom: 8 }} />
-                    )}
-                    <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>{oblog.title}</Typography>
-                    <Typography variant="body2" sx={{ color: '#666', mb: 1 }}>{oblog.content.replace(/<[^>]*>/g, '').substring(0, 80)}...</Typography>
-                    <Typography variant="caption" sx={{ color: '#888' }}>By {oblog.author} • {new Date(oblog.createdAt).toLocaleDateString()}</Typography>
-                  </Paper>
-                ))}
-              </Box>
-            </Box>
-          )}
         </Paper>
+        {/* Emoji Reactions Responsive */}
+        {blog && (
+          <Box sx={{ my: 4, textAlign: 'center' }}>
+            <Typography variant="h6" sx={{ mb: 2, fontSize: { xs: 18, sm: 22 } }}>React to this blog:</Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                gap: { xs: 1, sm: 2 },
+                flexWrap: { xs: 'wrap', sm: 'nowrap' },
+                flexDirection: { xs: 'row', sm: 'row' },
+                mb: 2
+              }}
+            >
+              {emojiList.map(({ key, icon, label }) => (
+                <Button
+                  key={key}
+                  onClick={() => handleReact(key)}
+                  disabled={!!reacting}
+                  sx={{
+                    minWidth: { xs: 36, sm: 48 },
+                    minHeight: { xs: 36, sm: 48 },
+                    borderRadius: '50%',
+                    fontSize: { xs: 18, sm: 24 },
+                    bgcolor: reacting === key ? '#ffe082' : '#fff',
+                    boxShadow: reacting === key ? '0 0 8px #ffd600' : 'none',
+                    transition: 'all 0.2s',
+                    mx: { xs: 0.5, sm: 1 },
+                    mb: { xs: 1, sm: 0 }
+                  }}
+                >
+                  <Box sx={{ fontSize: { xs: 22, sm: 28 } }}>{icon}</Box>
+                  <Typography variant="caption" sx={{ ml: 1, fontSize: { xs: 14, sm: 16 } }}>
+                    {blog.reactions?.[key] || 0}
+                  </Typography>
+                </Button>
+              ))}
+            </Box>
+          </Box>
+        )}
+        {/* Other Blogs Section Responsive */}
+        {otherBlogs.length > 0 && (
+          <Box sx={{ mt: 6 }}>
+            <Divider sx={{ mb: 3 }}><Chip label="Other Blogs" /></Divider>
+            <Box
+              sx={{
+                display: 'grid',
+                gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+                gap: 3,
+                justifyContent: 'center',
+                alignItems: 'stretch'
+              }}
+            >
+              {otherBlogs.map(oblog => (
+                <Paper key={oblog._id} sx={{ width: '100%', maxWidth: 320, p: { xs: 1, sm: 2 }, cursor: 'pointer', transition: '0.2s', '&:hover': { boxShadow: 4 }, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} onClick={() => navigate(`/blogs/${oblog._id}`)}>
+                  {oblog.thumbnail && (
+                    <img src={getThumbnailUrl(oblog.thumbnail)} alt={oblog.title} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 8, marginBottom: 8 }} />
+                  )}
+                  <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1, fontSize: { xs: 16, sm: 18 } }}>{oblog.title}</Typography>
+                  <Typography variant="body2" sx={{ color: '#666', mb: 1, fontSize: { xs: 14, sm: 16 } }}>{oblog.content.replace(/<[^>]*>/g, '').substring(0, 80)}...</Typography>
+                  <Typography variant="caption" sx={{ color: '#888', fontSize: { xs: 12, sm: 14 } }}>By {oblog.author} • {new Date(oblog.createdAt).toLocaleDateString()}</Typography>
+                </Paper>
+              ))}
+            </Box>
+          </Box>
+        )}
       </Container>
 
       {/* Snackbar for copy notification */}
