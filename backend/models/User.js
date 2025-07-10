@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
@@ -23,6 +24,10 @@ userSchema.statics.countAccountsByEmail = async function(email) {
 userSchema.statics.hasReachedAccountLimit = async function(email) {
   const count = await this.countAccountsByEmail(email);
   return count >= 5; // Maximum 5 accounts per email
+};
+
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
 module.exports = mongoose.model('User', userSchema); 
