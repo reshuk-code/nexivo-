@@ -77,37 +77,40 @@ exports.sendOTP = async (req, res) => {
 
 // Login with email, OTP, and (if needed) username/userId
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  const users = await User.find({ email });
-  if (!users.length) return res.status(404).json({ error: 'No account found' });
+  try {
+    const { email, password } = req.body;
+    if (!password) return res.status(400).json({ error: 'Password is required' });
 
-  // Password check सबै accounts मा गर्नुहोस्
-  const validUsers = [];
-  for (const user of users) {
-    const isMatch = await user.comparePassword(password);
-    if (isMatch) validUsers.push(user);
+    const users = await User.find({ email });
+    if (!users.length) return res.status(404).json({ error: 'No account found' });
+
+    const validUsers = [];
+    for (const user of users) {
+      if (!user.password) continue; // skip users with no password
+      const isMatch = await user.comparePassword(password);
+      if (isMatch) validUsers.push(user);
+    }
+    if (!validUsers.length) return res.status(401).json({ error: 'Invalid credentials' });
+
+    if (validUsers.length > 1) {
+      return res.json({
+        multiple: true,
+        accounts: validUsers.map(u => ({
+          _id: u._id,
+          username: u.username,
+          email: u.email,
+          profileImage: u.profileImage,
+          status: u.status,
+          role: u.role
+        }))
+      });
+    }
+
+    const user = validUsers[0];
+    res.json({ user, token: generateToken(user) });
+  } catch (err) {
+    res.status(500).json({ error: 'Login failed', details: err.message });
   }
-  if (!validUsers.length) return res.status(401).json({ error: 'Invalid credentials' });
-
-  // यदि एकभन्दा बढी valid accounts छन् भने, सबैको list पठाउनुहोस्
-  if (validUsers.length > 1) {
-    return res.json({
-      multiple: true,
-      accounts: validUsers.map(u => ({
-        _id: u._id,
-        username: u.username,
-        email: u.email,
-        profileImage: u.profileImage,
-        status: u.status,
-        role: u.role
-      }))
-    });
-  }
-
-  // एक मात्र valid account छ भने, सिधै login success
-  const user = validUsers[0];
-  // ...token generate, response etc...
-  res.json({ user, token: generateToken(user) });
 };
 
 // Verify email (OTP)
