@@ -37,20 +37,27 @@ function getThumbnailUrl(img) {
   return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
 }
 
-// Helper to update meta tags for social sharing
+// Helper to update meta tags for SEO and social sharing
 function updateMetaTags(blog) {
   if (!blog) return;
-  
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareTitle = blog.title || 'Check out this blog post';
-  const shareDescription = blog.content?.replace(/<[^>]*>/g, '').substring(0, 160) + '...' || 'Interesting read from NEXIVO';
-  const shareImage = getThumbnailUrl(blog.thumbnail) || 'https://reshuksapkota.com.np/og-image.jpg';
+  const shareDescription = blog.content?.replace(/<[^>]*>/g, '').substring(0, 160) || 'Interesting read from NEXIVO';
+  // Always use absolute blog thumbnail for SEO/social sharing image
+  let shareImage = '';
+  if (blog.thumbnail) {
+    // getThumbnailUrl returns absolute URL
+    shareImage = getThumbnailUrl(blog.thumbnail);
+  } else {
+    shareImage = 'https://reshuksapkota.com.np/og-image.jpg';
+  }
 
-  // Update document title
+  // Set document title
   document.title = `${shareTitle} - NEXIVO Blog`;
 
-  // Update or create meta tags
+  // Meta tags to set
   const metaTags = [
+    { name: 'description', content: shareDescription },
     { property: 'og:title', content: shareTitle },
     { property: 'og:description', content: shareDescription },
     { property: 'og:image', content: shareImage },
@@ -59,9 +66,9 @@ function updateMetaTags(blog) {
     { name: 'twitter:title', content: shareTitle },
     { name: 'twitter:description', content: shareDescription },
     { name: 'twitter:image', content: shareImage },
+    { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:url', content: shareUrl },
-    { name: 'description', content: shareDescription },
-    { name: 'keywords', content: 'blog, article, NEXIVO, IT solutions' }
+    { name: 'keywords', content: 'blog, article, NEXIVO, IT solutions, web development, digital services' }
   ];
 
   metaTags.forEach(({ property, name, content }) => {
@@ -75,7 +82,7 @@ function updateMetaTags(blog) {
     meta.setAttribute('content', content);
   });
 
-  // Update canonical URL
+  // Set canonical URL
   let canonical = document.querySelector('link[rel="canonical"]');
   if (!canonical) {
     canonical = document.createElement('link');
@@ -109,7 +116,6 @@ export default function BlogDetail() {
         updateMetaTags(data);
       })
       .catch(err => {
-        console.error('Failed to fetch blog:', err);
         setError(err.message);
         setLoading(false);
       });
@@ -117,10 +123,8 @@ export default function BlogDetail() {
     fetch(BACKEND_BASE_URL + `/v1/api/blogs/other/${id}`)
       .then(res => res.json())
       .then(data => setOtherBlogs(Array.isArray(data) ? data : []));
-
     // Cleanup function to reset meta tags when component unmounts
     return () => {
-      // Reset to default meta tags
       document.title = 'NEXIVO - Professional IT Solutions & Digital Services';
       const defaultMetaTags = [
         { property: 'og:title', content: 'NEXIVO - Professional IT Solutions & Digital Services' },
@@ -131,16 +135,16 @@ export default function BlogDetail() {
         { name: 'twitter:title', content: 'NEXIVO - Professional IT Solutions & Digital Services' },
         { name: 'twitter:description', content: 'NEXIVO provides cutting-edge IT solutions, web development, mobile apps, digital transformation, and technology consulting services.' },
         { name: 'twitter:image', content: 'https://reshuksapkota.com.np/twitter-image.jpg' },
-        { name: 'description', content: 'NEXIVO provides cutting-edge IT solutions, web development, mobile apps, digital transformation, and technology consulting services.' }
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'description', content: 'NEXIVO provides cutting-edge IT solutions, web development, mobile apps, digital transformation, and technology consulting services.' },
+        { name: 'keywords', content: 'blog, article, NEXIVO, IT solutions, web development, digital services' }
       ];
-
       defaultMetaTags.forEach(({ property, name, content }) => {
         let meta = document.querySelector(`meta[${property ? 'property' : 'name'}="${property || name}"]`);
         if (meta) {
           meta.setAttribute('content', content);
         }
       });
-
       let canonical = document.querySelector('link[rel="canonical"]');
       if (canonical) {
         canonical.setAttribute('href', 'https://reshuksapkota.com.np/');
