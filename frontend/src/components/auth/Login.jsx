@@ -48,7 +48,7 @@ export default function Login({ onSwitch, verifiedMsg }) {
       {!otpSent && <Button fullWidth variant="contained" sx={{ bgcolor: '#000', color: '#fff', mb: 2 }} onClick={handleSendOTP} disabled={loading || !email}>
         {loading ? <CircularProgress size={22} /> : 'Send OTP'}
       </Button>}
-      {otpSent && accounts.length > 0 && (
+      {otpSent && accounts.length >= 1 && (
         <div>
           <Typography variant="subtitle1">Choose your account</Typography>
           {accounts.map(acc => (
