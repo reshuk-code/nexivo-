@@ -46,7 +46,7 @@ export default function Login({ onSwitch, verifiedMsg }) {
     setShowAccountSelect(false);
     const res = await fetch('/v1/api/user/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password: code, userId })
+      body: JSON.stringify({ email, otp: code, userId })
     });
     const data = await res.json();
     if (data.user) loginUser(data.user, data.token);

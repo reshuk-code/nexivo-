@@ -18,12 +18,12 @@ export function AuthProvider({ children }) {
   }, [token]);
 
   // Login with email + OTP + userId (if needed)
-  async function login(email, code, userId) {
+  async function login(email, otp, userId) {
     setLoading(true);
     const res = await fetch(BASE_URL + '/v1/api/user/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userId ? { email, code, userId } : { email, code })
+      body: JSON.stringify(userId ? { email, otp, userId } : { email, otp })
     });
     const data = await res.json();
     setLoading(false);
