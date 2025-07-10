@@ -12,7 +12,8 @@ import {
   IconButton,
   Tooltip,
   Snackbar,
-  Alert
+  Alert,
+  Modal
 } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -28,6 +29,7 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects';
 import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import CloseIcon from '@mui/icons-material/Close';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://nexivo.onrender.com';
 
@@ -42,15 +44,41 @@ function updateMetaTags(blog) {
   if (!blog) return;
   const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
   const shareTitle = blog.title || 'Check out this blog post';
-  const shareDescription = blog.content?.replace(/<[^>]*>/g, '').substring(0, 160) || 'Interesting read from NEXIVO';
+  // Attractive, keyword-rich meta description
+  const shareDescription = (blog.content?.replace(/<[^>]*>/g, '').substring(0, 160) || '') + ' | Nexivo - Build Website in Nepal, Affordable Web Design, IT Solutions.';
   // Always use absolute blog thumbnail for SEO/social sharing image
   let shareImage = '';
   if (blog.thumbnail) {
-    // getThumbnailUrl returns absolute URL
     shareImage = getThumbnailUrl(blog.thumbnail);
   } else {
     shareImage = 'https://reshuksapkota.com.np/og-image.jpg';
   }
+  // Generate dynamic keywords from title/content and add extra SEO keywords
+  const extraKeywords = [
+    'Build Website in Nepal',
+    'Web Design Nepal',
+    'Affordable Website',
+    'Nexivo',
+    'Nexivo IT Solutions',
+    'Digital Services',
+    'Web Development',
+    'SEO',
+    'Business Website',
+    'Ecommerce Nepal',
+    'Professional Website',
+    'Startup Website',
+    'Portfolio Website',
+    'Nepal IT Company',
+    'Custom Website',
+    'Mobile Friendly Website',
+    'Fast Website',
+    'Best Website Nepal'
+  ];
+  const blogKeywords = [
+    ...blog.title?.split(' ') || [],
+    ...blog.content?.replace(/<[^>]*>/g, '').split(' ').slice(0, 10) || []
+  ].filter(Boolean);
+  const allKeywords = [...new Set([...blogKeywords, ...extraKeywords])].join(', ');
 
   // Set document title
   document.title = `${shareTitle} - NEXIVO Blog`;
@@ -68,7 +96,7 @@ function updateMetaTags(blog) {
     { name: 'twitter:image', content: shareImage },
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:url', content: shareUrl },
-    { name: 'keywords', content: 'blog, article, NEXIVO, IT solutions, web development, digital services' }
+    { name: 'keywords', content: allKeywords }
   ];
 
   metaTags.forEach(({ property, name, content }) => {
@@ -99,6 +127,7 @@ export default function BlogDetail() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [otherBlogs, setOtherBlogs] = useState([]);
   const [reacting, setReacting] = useState('');
+  const [imageModalOpen, setImageModalOpen] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -312,9 +341,9 @@ export default function BlogDetail() {
         {/* Main Blog Card Responsive */}
         <Paper
           sx={{
-            width: { xs: '100%', sm: 420 },
-            maxWidth: 480,
-            mx: { xs: 0, sm: 'auto' },
+            width: '100%',
+            maxWidth: { xs: '100%', md: 700, lg: 900 },
+            mx: 'auto',
             p: { xs: 2, sm: 3 },
             mb: 4,
             boxShadow: 2,
@@ -334,28 +363,22 @@ export default function BlogDetail() {
               {blog.title}
             </Typography>
             
-            {getThumbnailUrl(blog.thumbnail) && (
-              <Box sx={{ 
-                mb: 4, 
-                borderRadius: 2, 
-                overflow: 'hidden',
-                border: '1px solid #eee'
-              }}>
+            {blog?.thumbnail && (
+              <Box sx={{ textAlign: 'center', mb: 3 }}>
                 <img
                   src={getThumbnailUrl(blog.thumbnail)}
                   alt={blog.title}
                   style={{
                     width: '100%',
-                    height: 240,
-                    objectFit: 'cover',
-                    borderRadius: 16,
-                    boxShadow: '0 2px 16px rgba(0,0,0,0.10)',
-                    marginBottom: 18,
+                    maxWidth: 420,
+                    height: 'auto',
+                    borderRadius: 12,
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
                     cursor: 'pointer',
                     transition: 'transform 0.2s',
                   }}
-                  onMouseOver={e => (e.currentTarget.style.transform = 'scale(1.03)')}
-                  onMouseOut={e => (e.currentTarget.style.transform = 'scale(1)')}
+                  onClick={() => setImageModalOpen(true)}
+                  title="Click to enlarge"
                 />
               </Box>
             )}
@@ -591,11 +614,12 @@ export default function BlogDetail() {
                 gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
                 gap: 3,
                 justifyContent: 'center',
-                alignItems: 'stretch'
+                alignItems: 'stretch',
+                justifyItems: 'center'
               }}
             >
               {otherBlogs.map(oblog => (
-                <Paper key={oblog._id} sx={{ width: '100%', maxWidth: 320, p: { xs: 1, sm: 2 }, cursor: 'pointer', transition: '0.2s', '&:hover': { boxShadow: 4 }, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} onClick={() => navigate(`/blogs/${oblog._id}`)}>
+                <Paper key={oblog._id} sx={{ width: '100%', maxWidth: 320, p: { xs: 1, sm: 2 }, mx: 'auto', cursor: 'pointer', transition: '0.2s', '&:hover': { boxShadow: 4 }, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }} onClick={() => navigate(`/blogs/${oblog._id}`)}>
                   {oblog.thumbnail && (
                     <img src={getThumbnailUrl(oblog.thumbnail)} alt={oblog.title} style={{ width: '100%', height: 120, objectFit: 'cover', borderRadius: 8, marginBottom: 8 }} />
                   )}
@@ -620,6 +644,40 @@ export default function BlogDetail() {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Modal for thumbnail image */}
+      <Modal open={imageModalOpen} onClose={() => setImageModalOpen(false)}>
+        <Box sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          bgcolor: 'rgba(0,0,0,0.85)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 2000
+        }}>
+          <Box sx={{ position: 'absolute', top: 24, right: 32, zIndex: 2100 }}>
+            <IconButton onClick={() => setImageModalOpen(false)} sx={{ color: '#fff', bgcolor: 'rgba(0,0,0,0.3)' }}>
+              <CloseIcon fontSize="large" />
+            </IconButton>
+          </Box>
+          <img
+            src={blog?.thumbnail ? getThumbnailUrl(blog.thumbnail) : ''}
+            alt={blog?.title}
+            style={{
+              maxWidth: '90vw',
+              maxHeight: '85vh',
+              borderRadius: 16,
+              boxShadow: '0 4px 32px rgba(0,0,0,0.4)',
+              background: '#fff',
+              objectFit: 'contain',
+            }}
+          />
+        </Box>
+      </Modal>
     </Box>
   );
 } 
