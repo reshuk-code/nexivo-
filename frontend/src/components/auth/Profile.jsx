@@ -31,6 +31,7 @@ export default function Profile() {
   // Helper to extract Google Drive file ID and get backend proxy URL
   const getProfileImage = (img) => {
     if (!img) return '';
+    if (img.startsWith('http')) return img; // Cloudinary or external
     if (!img.includes('/') && !img.startsWith('http')) return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
     const match = img.match(/[-\w]{25,}/);
     if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[1]}`;

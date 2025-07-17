@@ -25,6 +25,7 @@ const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://nexivo.onr
 // Helper to get Google Drive image URL from file ID or old URL
 function getThumbnailUrl(img) {
   if (!img) return '';
+  if (img.startsWith('http')) return img; // Cloudinary or external
   if (!img.includes('/') && !img.startsWith('http')) return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
   const match = img.match(/[-\w]{25,}/);
   if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[1]}`;

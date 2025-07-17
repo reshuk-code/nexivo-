@@ -31,6 +31,7 @@ export default function Navbar() {
 
   const getProfileImage = (img) => {
     if (!img) return '';
+    if (img.startsWith('http')) return img; // Cloudinary or external
     const match = img.match(/[-\w]{25,}/);
     if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[0]}`;
     return '';

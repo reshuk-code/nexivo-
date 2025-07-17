@@ -79,7 +79,8 @@ const professions = [
 // Helper to get Google Drive image URL from file ID or old URL
 function getImageUrl(img) {
   if (!img) return '';
-  // केवल 25+ character को fileId मात्र निकाल्ने
+  if (img.startsWith('http')) return img; // Cloudinary or external
+  // Google Drive/fileId मात्र भएमा
   const match = img.match(/[-\w]{25,}/);
   if (match) return `${BACKEND_BASE_URL}/v1/api/drive/image/${match[0]}`;
   return '';

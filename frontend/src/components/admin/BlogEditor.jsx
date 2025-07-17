@@ -17,6 +17,7 @@ import { useGlobalDragDrop } from '../../hooks/useGlobalDragDrop';
 // Helper to get Google Drive image URL from file ID or old URL
 function getThumbnailUrl(img) {
   if (!img) return '';
+  if (img.startsWith('http')) return img; // Cloudinary or external
   if (!img.includes('/') && !img.startsWith('http')) return `https://nexivo.onrender.com/v1/api/drive/image/${img}`;
   const match = img.match(/id=([a-zA-Z0-9_-]+)/);
   if (match) return `https://nexivo.onrender.com/v1/api/drive/image/${match[1]}`;
