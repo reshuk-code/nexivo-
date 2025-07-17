@@ -3,6 +3,8 @@ const User = require('../models/User');
 const Enrollment = require('../models/Enrollment');
 const { sendEmail } = require('../utils/email');
 const { uploadToDrive } = require('../utils/googleDrive');
+const cloudinary = require('../utils/cloudinary');
+const streamifier = require('streamifier');
 const Subscriber = require('../models/Subscriber');
 
 // Get all services
@@ -30,16 +32,30 @@ exports.createService = async (req, res) => {
     // Handle image upload if provided
     if (req.file) {
       try {
-        console.log('Starting image upload...');
-        const fileName = `service_${Date.now()}_${req.file.originalname}`;
-        imageUrl = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
-        console.log('Image upload successful:', imageUrl);
-      } catch (uploadError) {
-        console.error('Image upload error:', uploadError);
-        return res.status(500).json({ 
-          error: 'Failed to upload image', 
-          details: uploadError.message 
+        // Try Cloudinary first
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'nexivo_services' },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
         });
+        imageUrl = uploadResult.secure_url;
+      } catch (cloudErr) {
+        // Fallback to Google Drive if Cloudinary fails
+        try {
+          const fileName = `service_${Date.now()}_${req.file.originalname}`;
+          imageUrl = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError);
+          return res.status(500).json({ 
+            error: 'Failed to upload image', 
+            details: uploadError.message 
+          });
+        }
       }
     }
 
@@ -107,12 +123,28 @@ exports.updateService = async (req, res) => {
     // Handle image upload if provided
     if (req.file) {
       try {
-        const fileName = `service_${Date.now()}_${req.file.originalname}`;
-        const imageUrl = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
-        updateData.image = imageUrl;
-      } catch (uploadError) {
-        console.error('Image upload error:', uploadError);
-        return res.status(500).json({ error: 'Failed to upload image' });
+        // Try Cloudinary first
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'nexivo_services' },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        });
+        updateData.image = uploadResult.secure_url;
+      } catch (cloudErr) {
+        // Fallback to Google Drive if Cloudinary fails
+        try {
+          const fileName = `service_${Date.now()}_${req.file.originalname}`;
+          const imageUrl = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
+          updateData.image = imageUrl;
+        } catch (uploadError) {
+          console.error('Image upload error:', uploadError);
+          return res.status(500).json({ error: 'Failed to upload image' });
+        }
       }
     }
     

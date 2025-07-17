@@ -2,6 +2,8 @@ const Blog = require('../models/Blog');
 const { uploadToDrive } = require('../utils/googleDrive');
 const Subscriber = require('../models/Subscriber');
 const { sendEmail } = require('../utils/email');
+const cloudinary = require('../utils/cloudinary');
+const streamifier = require('streamifier');
 
 // Create a new blog
 exports.createBlog = async (req, res) => {
@@ -12,11 +14,27 @@ exports.createBlog = async (req, res) => {
     // Handle thumbnail upload if provided
     if (req.file) {
       try {
-        const fileName = `blog_thumbnail_${Date.now()}_${req.file.originalname}`;
-        thumbnailUrl = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
-      } catch (uploadError) {
-        console.error('Thumbnail upload error:', uploadError);
-        return res.status(500).json({ error: 'Failed to upload thumbnail' });
+        // Try Cloudinary first
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'nexivo_blogs' },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        });
+        thumbnailUrl = uploadResult.secure_url;
+      } catch (cloudErr) {
+        // Fallback to Google Drive if Cloudinary fails
+        try {
+          const fileName = `blog_thumbnail_${Date.now()}_${req.file.originalname}`;
+          thumbnailUrl = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
+        } catch (uploadError) {
+          console.error('Thumbnail upload error:', uploadError);
+          return res.status(500).json({ error: 'Failed to upload thumbnail' });
+        }
       }
     }
 

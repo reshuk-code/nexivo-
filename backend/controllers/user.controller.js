@@ -3,6 +3,8 @@ const { sendOTPEmail } = require('../utils/email');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { uploadToDrive } = require('../utils/googleDrive');
+const cloudinary = require('../utils/cloudinary');
+const streamifier = require('streamifier');
 const jwt = require('jsonwebtoken');
 const VacancyApplication = require('../models/VacancyApplication');
 
@@ -126,17 +128,31 @@ exports.editProfile = async (req, res) => {
     // Handle profile image upload
     if (req.file) {
       try {
-        console.log('Starting profile image upload...');
-        const fileName = `profile_${Date.now()}_${req.file.originalname}`;
-        const driveUrl = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
-        update.profileImage = driveUrl;
-        console.log('Profile image upload successful:', driveUrl);
-      } catch (uploadError) {
-        console.error('Profile image upload error:', uploadError);
-        return res.status(500).json({ 
-          error: 'Failed to upload profile image', 
-          details: uploadError.message 
+        // Try Cloudinary first
+        const uploadResult = await new Promise((resolve, reject) => {
+          const uploadStream = cloudinary.uploader.upload_stream(
+            { folder: 'nexivo_profiles' },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+          streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
         });
+        update.profileImage = uploadResult.secure_url;
+      } catch (cloudErr) {
+        // Fallback to Google Drive if Cloudinary fails
+        try {
+          const fileName = `profile_${Date.now()}_${req.file.originalname}`;
+          const driveUrl = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
+          update.profileImage = driveUrl;
+        } catch (uploadError) {
+          console.error('Profile image upload error:', uploadError);
+          return res.status(500).json({ 
+            error: 'Failed to upload profile image', 
+            details: uploadError.message 
+          });
+        }
       }
     }
     

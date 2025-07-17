@@ -1,6 +1,8 @@
 const Vacancy = require('../models/Vacancy');
 const VacancyApplication = require('../models/VacancyApplication');
 const { uploadToDrive } = require('../utils/googleDrive');
+const cloudinary = require('../utils/cloudinary');
+const streamifier = require('streamifier');
 const { sendEmail } = require('../utils/email');
 const { renderTemplate } = require('../utils/email');
 const Subscriber = require('../models/Subscriber');
@@ -92,8 +94,30 @@ exports.applyVacancy = async (req, res) => {
   try {
     const { name, email, phone, message, vacancyId } = req.body;
     if (!req.file) return res.status(400).json({ error: 'CV file required' });
-    const fileName = `cv_${Date.now()}_${req.file.originalname}`;
-    const cvFileId = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
+    let cvFileId = null;
+    try {
+      // Try Cloudinary first
+      const uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: 'nexivo_cvs', resource_type: 'auto' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+      });
+      cvFileId = uploadResult.secure_url;
+    } catch (cloudErr) {
+      // Fallback to Google Drive if Cloudinary fails
+      try {
+        const fileName = `cv_${Date.now()}_${req.file.originalname}`;
+        cvFileId = await uploadToDrive(req.file.buffer, fileName, req.file.mimetype);
+      } catch (uploadError) {
+        console.error('CV upload error:', uploadError);
+        return res.status(500).json({ error: 'Failed to upload CV' });
+      }
+    }
     const application = new VacancyApplication({
       name, email, phone, message, vacancyId, cv: cvFileId
     });
