@@ -29,6 +29,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { useAuth } from './auth/AuthContext';
+import { Helmet } from 'react-helmet-async';
 
 // Custom CSS for Swiper
 const swiperStyles = `
@@ -229,12 +230,22 @@ export default function Services() {
   };
 
   return (
-    <Box id="services" sx={{ py: 8, bgcolor: '#fff' }}>
+    <Box id="services" sx={{ py: 8, bgcolor: '#f8f8f8' }}>
+      <Helmet>
+        <title>IT Services in Nepal | Web Design, Development, Digital Solutions | Nexivo</title>
+        <meta name="description" content="Explore Nexivo's IT services: web design, development, cloud, ecommerce, digital solutions in Nepal. Grow your business with our expert team." />
+        <meta name="keywords" content="IT services, web design, web development, digital solutions, ecommerce, cloud, Nepal, nexivo" />
+        <meta property="og:image" content="https://www.reshuksapkota.com.np/assets/hero-image-Bn8O94uu.jpg" />
+        <link rel="canonical" href="https://www.reshuksapkota.com.np/services" />
+      </Helmet>
       <style>{swiperStyles}</style>
       <Container>
-        <Typography variant="h4" fontWeight={700} sx={{ mb: 4, fontFamily: 'Poppins', textAlign: 'center', color: '#111' }}>
-          Our Services
-        </Typography>
+        <h1 style={{ fontFamily: 'Poppins', fontWeight: 700, textAlign: 'center', marginBottom: 24 }}>
+          Our IT Services in Nepal
+        </h1>
+        <h2 style={{ fontFamily: 'Poppins', fontWeight: 500, textAlign: 'center', marginBottom: 16, color: '#444' }}>
+          Web Design, Development, Cloud, Ecommerce & More
+        </h2>
         
         {services.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 8 }}>

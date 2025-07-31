@@ -3,6 +3,7 @@ import { Box, Container, Typography, Grid, Paper, Button, Alert, Avatar, Stack }
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import { Helmet } from 'react-helmet-async';
 
 const BASE_URL = 'https://nexivo.onrender.com';
 
@@ -85,7 +86,20 @@ export default function Contact() {
 
   return (
     <Box id="contact" sx={{ py: 8, bgcolor: '#fff' }}>
+      <Helmet>
+        <title>Contact Nexivo | IT Solutions & Web Development in Nepal</title>
+        <meta name="description" content="Contact Nexivo for web development, IT solutions, digital services, and business inquiries in Nepal." />
+        <meta name="keywords" content="contact, nexivo, IT solutions, web development, digital services, Nepal" />
+        <meta property="og:image" content="https://www.reshuksapkota.com.np/assets/hero-image-Bn8O94uu.jpg" />
+        <link rel="canonical" href="https://www.reshuksapkota.com.np/contact" />
+      </Helmet>
       <Container>
+        <h1 style={{ fontFamily: 'Poppins', fontWeight: 700, textAlign: 'center', marginBottom: 24 }}>
+          Contact Nexivo
+        </h1>
+        <h2 style={{ fontFamily: 'Poppins', fontWeight: 500, textAlign: 'center', marginBottom: 16, color: '#444' }}>
+          IT Solutions & Web Development in Nepal
+        </h2>
         <Typography variant="h4" fontWeight={700} sx={{ mb: 3, fontFamily: 'Poppins', textAlign: 'center' }}>
           Contact Us
         </Typography>

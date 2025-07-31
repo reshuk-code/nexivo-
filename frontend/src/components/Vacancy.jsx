@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { WorkOutline, LocationOn, Schedule, Description } from '@mui/icons-material';
 import Loader from './Loader';
+import { Helmet } from 'react-helmet-async';
 
 const BASE_URL = 'https://nexivo.onrender.com';
 
@@ -178,8 +179,43 @@ export default function Vacancy() {
   }
 
   return (
-    <Box sx={{ py: 8, bgcolor: '#fafafa', minHeight: '80vh' }}>
+    <Box id="vacancy" sx={{ py: 8, bgcolor: '#f8f8f8' }}>
+      <Helmet>
+        <title>Job Vacancies & Careers at Nexivo | IT Jobs in Nepal</title>
+        <meta name="description" content="Explore latest job vacancies at Nexivo. Join our team of passionate innovators. Software developer jobs, IT jobs, freshers welcome!" />
+        <meta name="keywords" content="job, vacancy, careers, software developer, IT jobs, nexivo, jobs in nepal, tech jobs, freshers, hiring" />
+        <meta property="og:image" content="https://www.reshuksapkota.com.np/assets/hero-image-Bn8O94uu.jpg" />
+        <link rel="canonical" href="https://www.reshuksapkota.com.np/vacancy" />
+        <script type="application/ld+json">{`
+          {
+            "@context": "https://schema.org/",
+            "@type": "JobPosting",
+            "title": "IT Jobs at Nexivo",
+            "description": "Explore latest job vacancies at Nexivo. Software developer jobs, IT jobs, freshers welcome!",
+            "hiringOrganization": {
+              "@type": "Organization",
+              "name": "Nexivo",
+              "sameAs": "https://www.reshuksapkota.com.np/"
+            },
+            "jobLocation": {
+              "@type": "Place",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Kathmandu",
+                "addressCountry": "NP"
+              }
+            }
+          }
+        `}</script>
+      </Helmet>
       <Container maxWidth="lg">
+        <h1 style={{ fontFamily: 'Poppins', fontWeight: 700, textAlign: 'center', marginBottom: 24 }}>
+          Job Vacancies & Careers at Nexivo
+        </h1>
+        <h2 style={{ fontFamily: 'Poppins', fontWeight: 500, textAlign: 'center', marginBottom: 16, color: '#444' }}>
+          IT Jobs, Software Developer, Freshers Welcome
+        </h2>
+        
         <Typography 
           variant="h3" 
           fontWeight={700} 

@@ -18,6 +18,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import Loader from './Loader';
+import { Helmet } from 'react-helmet-async';
 
 const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://nexivo.onrender.com';
 
@@ -57,10 +58,20 @@ export default function Blogs() {
   if (blogs.length === 0) {
     return (
       <Box id="blogs" sx={{ py: 8, bgcolor: '#f8f8f8' }}>
+        <Helmet>
+          <title>Latest Blogs | IT, Web Development, Digital Trends | Nexivo</title>
+          <meta name="description" content="Read the latest blogs from Nexivo on IT, web development, digital trends, and technology in Nepal." />
+          <meta name="keywords" content="blogs, IT, web development, digital trends, technology, Nepal, nexivo" />
+          <meta property="og:image" content="https://www.reshuksapkota.com.np/assets/hero-image-Bn8O94uu.jpg" />
+          <link rel="canonical" href="https://www.reshuksapkota.com.np/blogs" />
+        </Helmet>
         <Container>
-          <Typography variant="h4" fontWeight={700} sx={{ mb: 4, fontFamily: 'Poppins', textAlign: 'center', color: '#111' }}>
-            Latest Blogs
-          </Typography>
+          <h1 style={{ fontFamily: 'Poppins', fontWeight: 700, textAlign: 'center', marginBottom: 24 }}>
+            Latest Blogs & Insights
+          </h1>
+          <h2 style={{ fontFamily: 'Poppins', fontWeight: 500, textAlign: 'center', marginBottom: 16, color: '#444' }}>
+            IT, Web Development, Digital Trends
+          </h2>
           <Box sx={{ textAlign: 'center', py: 4 }}>
             <Typography variant="h6" sx={{ color: '#666', fontFamily: 'Poppins', mb: 2 }}>
               No blogs available yet
@@ -76,10 +87,20 @@ export default function Blogs() {
 
   return (
     <Box id="blogs" sx={{ py: 8, bgcolor: '#f8f8f8' }}>
+      <Helmet>
+        <title>Latest Blogs | IT, Web Development, Digital Trends | Nexivo</title>
+        <meta name="description" content="Read the latest blogs from Nexivo on IT, web development, digital trends, and technology in Nepal." />
+        <meta name="keywords" content="blogs, IT, web development, digital trends, technology, Nepal, nexivo" />
+        <meta property="og:image" content="https://www.reshuksapkota.com.np/assets/hero-image-Bn8O94uu.jpg" />
+        <link rel="canonical" href="https://www.reshuksapkota.com.np/blogs" />
+      </Helmet>
       <Container>
-        <Typography variant="h4" fontWeight={700} sx={{ mb: 4, fontFamily: 'Poppins', textAlign: 'center', color: '#111' }}>
-          Latest Blogs
-        </Typography>
+        <h1 style={{ fontFamily: 'Poppins', fontWeight: 700, textAlign: 'center', marginBottom: 24 }}>
+          Latest Blogs & Insights
+        </h1>
+        <h2 style={{ fontFamily: 'Poppins', fontWeight: 500, textAlign: 'center', marginBottom: 16, color: '#444' }}>
+          IT, Web Development, Digital Trends
+        </h2>
         <Swiper
           modules={[Navigation, Pagination]}
           spaceBetween={30}
