@@ -35,9 +35,10 @@ const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'https://nexivo.onr
 
 // Helper to get Google Drive image URL from file ID or old URL
 function getThumbnailUrl(img) {
-  if (!img) return '';
-  if (img.startsWith('http')) return img; // Cloudinary or external
-  return `${BACKEND_BASE_URL}/v1/api/drive/image/${img}`;
+  if (!img) return 'https://www.reshuksapkota.com.np/assets/hero-image-Bn8O94uu.jpg'; // fallback image
+  if (img.startsWith('http')) return img; // already absolute
+  // यदि img relative छ भने absolute बनाउने
+  return `https://www.reshuksapkota.com.np/${img.replace(/^\//, '')}`;
 }
 
 // Helper to update meta tags for SEO and social sharing
