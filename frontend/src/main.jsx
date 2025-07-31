@@ -4,6 +4,7 @@ import App from './App.jsx';
 import './index.css';
 import '@fontsource/poppins';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { HelmetProvider } from 'react-helmet-async'; // <-- Import HelmetProvider
 
 const theme = createTheme({
   palette: {
@@ -18,11 +19,11 @@ const theme = createTheme({
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
- 
+    <HelmetProvider> {/* <-- Wrap App with HelmetProvider */}
       <ThemeProvider theme={theme}>
-      <CssBaseline />
-    <App />
-    </ThemeProvider>
-    
+        <CssBaseline />
+        <App />
+      </ThemeProvider>
+    </HelmetProvider>
   </React.StrictMode>
 );
