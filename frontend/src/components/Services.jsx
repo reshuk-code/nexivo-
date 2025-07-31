@@ -86,6 +86,52 @@ function getImageUrl(img) {
   return '';
 }
 
+// SEO/meta tags set गर्ने function
+function updateServicesMetaTags() {
+  const title = "Nexivo Services | Affordable Web Design, IT Solutions in Nepal";
+  const description = "Discover Nexivo's range of digital services: web design, development, IT solutions, cloud, ecommerce, and more. Grow your business with us!";
+  const keywords = "services, web design, IT solutions, nexivo, digital services, ecommerce, cloud, business, Nepal, affordable website";
+  const url = window.location.href;
+  const image = "https://www.reshuksapkota.com.np/assets/hero-image-Bn8O94uu.jpg";
+
+  document.title = title;
+
+  const metaTags = [
+    { name: 'description', content: description },
+    { property: 'og:title', content: title },
+    { property: 'og:description', content: description },
+    { property: 'og:image', content: image },
+    { property: 'og:url', content: url },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:title', content: title },
+    { name: 'twitter:description', content: description },
+    { name: 'twitter:image', content: image },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:url', content: url },
+    { name: 'keywords', content: keywords }
+  ];
+
+  metaTags.forEach(({ property, name, content }) => {
+    let meta = document.querySelector(`meta[${property ? 'property' : 'name'}="${property || name}"]`);
+    if (!meta) {
+      meta = document.createElement('meta');
+      if (property) meta.setAttribute('property', property);
+      if (name) meta.setAttribute('name', name);
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', content);
+  });
+
+  // Canonical
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement('link');
+    canonical.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonical);
+  }
+  canonical.setAttribute('href', url);
+}
+
 export default function Services() {
   const [services, setServices] = useState([]);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -109,6 +155,10 @@ export default function Services() {
     fetch(BACKEND_BASE_URL + '/v1/api/services')
       .then(res => res.json())
       .then(data => setServices(Array.isArray(data) ? data : []));
+  }, []);
+
+  useEffect(() => {
+    updateServicesMetaTags();
   }, []);
 
   const handleEnroll = (service) => {

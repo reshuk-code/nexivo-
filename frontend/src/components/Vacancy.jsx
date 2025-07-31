@@ -21,6 +21,52 @@ import Loader from './Loader';
 
 const BASE_URL = 'https://nexivo.onrender.com';
 
+// SEO/meta tags set गर्ने function
+function updateVacancyMetaTags() {
+  const title = "Careers & Job Openings at Nexivo | IT Jobs in Nepal";
+  const description = "Explore latest job vacancies at Nexivo. Join our team of passionate innovators. Software developer jobs, IT jobs, freshers welcome!";
+  const keywords = "job, vacancy, careers, software developer, IT jobs, nexivo, jobs in nepal, tech jobs, freshers, hiring";
+  const url = window.location.href;
+  const image = "https://www.reshuksapkota.com.np/assets/hero-image-Bn8O94uu.jpg";
+
+  document.title = title;
+
+  const metaTags = [
+    { name: 'description', content: description },
+    { property: 'og:title', content: title },
+    { property: 'og:description', content: description },
+    { property: 'og:image', content: image },
+    { property: 'og:url', content: url },
+    { property: 'og:type', content: 'website' },
+    { name: 'twitter:title', content: title },
+    { name: 'twitter:description', content: description },
+    { name: 'twitter:image', content: image },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:url', content: url },
+    { name: 'keywords', content: keywords }
+  ];
+
+  metaTags.forEach(({ property, name, content }) => {
+    let meta = document.querySelector(`meta[${property ? 'property' : 'name'}="${property || name}"]`);
+    if (!meta) {
+      meta = document.createElement('meta');
+      if (property) meta.setAttribute('property', property);
+      if (name) meta.setAttribute('name', name);
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', content);
+  });
+
+  // Canonical
+  let canonical = document.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement('link');
+    canonical.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonical);
+  }
+  canonical.setAttribute('href', url);
+}
+
 export default function Vacancy() {
   const [vacancies, setVacancies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +83,7 @@ export default function Vacancy() {
   const [alert, setAlert] = useState(null);
 
   useEffect(() => {
+    updateVacancyMetaTags();
     fetchVacancies();
   }, []);
 
